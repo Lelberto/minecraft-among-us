@@ -30,10 +30,12 @@ public class ConfigurationManager {
 
         // Configuration file creation
         try {
-            YamlConfiguration config = new YamlConfiguration();
-            ConfigurationSection hubSection = config.createSection("hub");
-            hubSection.set("spawn", this.hubSpawn);
-            config.save(configFile);
+            if (!configFile.exists()) {
+                YamlConfiguration config = new YamlConfiguration();
+                ConfigurationSection hubSection = config.createSection("hub");
+                hubSection.set("spawn", this.hubSpawn);
+                config.save(configFile);
+            }
         } catch (IOException ex) {
             Plugin.log("Could not create the configuration file : " + ex.getMessage());
         }
