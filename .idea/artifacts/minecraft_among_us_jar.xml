@@ -3,7 +3,6 @@
     <output-path>$PROJECT_DIR$/out/artifacts/minecraft_among_us_jar</output-path>
     <root id="archive" name="minecraft-among-us.jar">
       <element id="module-output" name="minecraft-among-us" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/libs/spigot-1.16.4.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
