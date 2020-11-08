@@ -3,9 +3,14 @@ package com.minecraft_among_us.plugin.game;
 import com.minecraft_among_us.plugin.AmongUsPlayer;
 import com.minecraft_among_us.plugin.Color;
 import com.minecraft_among_us.plugin.config.ConfigurationManager;
+import com.minecraft_among_us.plugin.inventories.ComputerInventory;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -89,6 +94,14 @@ public class Game {
             Player player = e.getPlayer();
             game.players.remove(AmongUsPlayer.getPlayer(player.getUniqueId()));
             e.setQuitMessage("§7[§c-§7]§r §6" + player.getName());
+        }
+
+        @EventHandler
+        public void onOpenComputer(PlayerInteractEvent e) {
+            if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getClickedBlock().getLocation().equals(ConfigurationManager.getInstance().computerLocation)) {
+                Player player = e.getPlayer();
+                player.openInventory(new ComputerInventory(AmongUsPlayer.getPlayer(player.getUniqueId())).create());
+            }
         }
     }
 }

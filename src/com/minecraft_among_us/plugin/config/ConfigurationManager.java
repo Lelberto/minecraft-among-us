@@ -23,6 +23,7 @@ public class ConfigurationManager {
 
     private final File configFile;
     public Location hubSpawn;
+    public Location computerLocation;
 
     private ConfigurationManager(File configFile) {
         this.configFile = configFile;
@@ -34,6 +35,8 @@ public class ConfigurationManager {
                 YamlConfiguration config = new YamlConfiguration();
                 ConfigurationSection hubSection = config.createSection("hub");
                 hubSection.set("spawn", this.hubSpawn);
+                ConfigurationSection computerSection = config.createSection("computer");
+                computerSection.set("location", this.computerLocation);
                 config.save(configFile);
             }
         } catch (IOException ex) {
@@ -45,17 +48,7 @@ public class ConfigurationManager {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
         ConfigurationSection hubSection = config.getConfigurationSection("hub");
         this.hubSpawn = hubSection.getLocation("spawn");
-    }
-
-    public void save() {
-        YamlConfiguration config = new YamlConfiguration();
-        ConfigurationSection hubSection = config.createSection("hub");
-        hubSection.set("spawn", this.hubSpawn);
-
-        try {
-            config.save(this.configFile);
-        } catch (IOException ex) {
-            Plugin.log("Could not save the configuration file : " + ex.getMessage());
-        }
+        ConfigurationSection computerSection = config.getConfigurationSection("computer");
+        this.computerLocation = computerSection.getLocation("location");
     }
 }
