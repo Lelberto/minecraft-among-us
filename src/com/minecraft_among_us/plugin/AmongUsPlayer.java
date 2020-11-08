@@ -37,22 +37,27 @@ public class AmongUsPlayer {
 
     public void setColor(Color color) {
         this.color = color;
+
         ItemStack helmetItem = new ItemStack(Material.LEATHER_HELMET);
         LeatherArmorMeta helmetItemMeta = (LeatherArmorMeta) helmetItem.getItemMeta();
         helmetItemMeta.setColor(org.bukkit.Color.fromRGB(color.red, color.green, color.blue));
         helmetItem.setItemMeta(helmetItemMeta);
+
         ItemStack chestplateItem = new ItemStack(Material.LEATHER_CHESTPLATE);
         LeatherArmorMeta chestplateItemMeta = (LeatherArmorMeta) chestplateItem.getItemMeta();
         chestplateItemMeta.setColor(org.bukkit.Color.fromRGB(color.red, color.green, color.blue));
         chestplateItem.setItemMeta(chestplateItemMeta);
+
         ItemStack leggingsItem = new ItemStack(Material.LEATHER_LEGGINGS);
         LeatherArmorMeta leggingsItemMeta = (LeatherArmorMeta) leggingsItem.getItemMeta();
         leggingsItemMeta.setColor(org.bukkit.Color.fromRGB(color.red, color.green, color.blue));
         leggingsItem.setItemMeta(leggingsItemMeta);
+
         ItemStack bootsItem = new ItemStack(Material.LEATHER_BOOTS);
         LeatherArmorMeta bootsItemMeta = (LeatherArmorMeta) bootsItem.getItemMeta();
         bootsItemMeta.setColor(org.bukkit.Color.fromRGB(color.red, color.green, color.blue));
         bootsItem.setItemMeta(bootsItemMeta);
+
         PlayerInventory inventory = ((Player) this.toBukkitPlayer()).getInventory();
         inventory.setHelmet(helmetItem);
         inventory.setChestplate(chestplateItem);
