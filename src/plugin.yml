@@ -3,3 +3,7 @@ name: "MinecraftAmongUs"
 version: "1.0.0"
 author: "Lelberto"
 api-version: "1.16"
+commands:
+  test:
+    description: "Test command for MinecraftAmongUs plugin"
+    usage: "/test"
