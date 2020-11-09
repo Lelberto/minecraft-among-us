@@ -1,14 +1,25 @@
 package com.minecraft_among_us.plugin;
 
 import com.minecraft_among_us.plugin.game.Game;
+import com.minecraft_among_us.plugin.tasks.SimonTask;
+import com.minecraft_among_us.plugin.tasks.Task;
+import com.minecraft_among_us.plugin.tasks.TemperatureTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public class AmongUsPlayer {
@@ -20,11 +31,13 @@ public class AmongUsPlayer {
     private final UUID uuid;
     private Color color;
     private boolean impostor;
+    private List<Task> tasks;
 
     public AmongUsPlayer(UUID uuid, Color color) {
         this.uuid = uuid;
         setColor(color);
         this.impostor = false;
+        this.tasks = new ArrayList<>(Arrays.asList(new SimonTask(this), new TemperatureTask(this)));
     }
 
     public UUID getUuid() {
@@ -79,6 +92,14 @@ public class AmongUsPlayer {
 
     public void setImpostor() {
         this.impostor = true;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public Task getTask(String taskName) {
+        return this.tasks.stream().filter(task -> task.getName().equals(taskName)).findFirst().orElse(null);
     }
 
     public OfflinePlayer toBukkitPlayer() {
