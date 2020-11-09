@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -105,98 +106,100 @@ public class GameSettingsInventory extends BaseInventory {
         public void onClick(InventoryClickEvent e) {
             if (e.getView().getTitle().equals("Game settings")) {
                 e.setCancelled(true);
-                Player player = (Player) e.getWhoClicked();
-                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
-                ItemStack currentItem = e.getCurrentItem();
-                if (currentItem != null) {
-                    Game game = Game.getInstance();
-                    Material currentMaterial = currentItem.getType();
-                    if (currentMaterial.equals(Material.STONE_SWORD)) {
-                        if (game.getSettings().impostors == 3) {
-                            game.getSettings().impostors = 1;
-                        } else {
-                            game.getSettings().impostors++;
+                if (e.getAction().equals(InventoryAction.PICKUP_ALL)) {
+                    Player player = (Player) e.getWhoClicked();
+                    AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
+                    ItemStack currentItem = e.getCurrentItem();
+                    if (currentItem != null) {
+                        Game game = Game.getInstance();
+                        Material currentMaterial = currentItem.getType();
+                        if (currentMaterial.equals(Material.STONE_SWORD)) {
+                            if (game.getSettings().impostors == 3) {
+                                game.getSettings().impostors = 1;
+                            } else {
+                                game.getSettings().impostors++;
+                            }
+                            ItemMeta currentItemItemMeta = currentItem.getItemMeta();
+                            currentItemItemMeta.setLore(Arrays.asList("§7Number of impostors : §a" + game.getSettings().impostors));
+                            currentItem.setItemMeta(currentItemItemMeta);
+                        } else if (currentMaterial.equals(Material.FEATHER)) {
+                            game.getSettings().confirmEjects = !game.getSettings().confirmEjects;
+                            ItemMeta currentItemItemMeta = currentItem.getItemMeta();
+                            currentItemItemMeta.setLore(Arrays.asList("§7Show people role at ejection : §a" + (game.getSettings().confirmEjects ? "On" : "Off")));
+                            currentItem.setItemMeta(currentItemItemMeta);
+                        } else if (currentMaterial.equals(Material.CRIMSON_BUTTON)) {
+                            if (game.getSettings().emergencyMeetings == 9) {
+                                game.getSettings().emergencyMeetings = 0;
+                            } else {
+                                game.getSettings().emergencyMeetings++;
+                            }
+                            ItemMeta currentItemItemMeta = currentItem.getItemMeta();
+                            currentItemItemMeta.setLore(Arrays.asList("§7Number of emergency meetings calls per person : §a" + game.getSettings().emergencyMeetings));
+                            currentItem.setItemMeta(currentItemItemMeta);
+                        } else if (currentMaterial.equals(Material.SOUL_TORCH)) {
+                            if (game.getSettings().emergencyCooldown == 40) {
+                                game.getSettings().emergencyCooldown = 10;
+                            } else {
+                                game.getSettings().emergencyCooldown += 2.5;
+                            }
+                            ItemMeta currentItemItemMeta = currentItem.getItemMeta();
+                            currentItemItemMeta.setLore(Arrays.asList("§7Time (in seconds) before enable emergency calls : §a" + game.getSettings().emergencyCooldown));
+                            currentItem.setItemMeta(currentItemItemMeta);
+                        } else if (currentMaterial.equals(Material.PAPER)) {
+                            if (game.getSettings().discussionTime == 30) {
+                                game.getSettings().discussionTime = 5;
+                            } else {
+                                game.getSettings().discussionTime += 5;
+                            }
+                            ItemMeta currentItemItemMeta = currentItem.getItemMeta();
+                            currentItemItemMeta.setLore(Arrays.asList("§7Time (in seconds) before enable voting time : §a" + game.getSettings().discussionTime));
+                            currentItem.setItemMeta(currentItemItemMeta);
+                        } else if (currentMaterial.equals(Material.FILLED_MAP)) {
+                            if (game.getSettings().votingTime == 240) {
+                                game.getSettings().votingTime = 30;
+                            } else {
+                                game.getSettings().votingTime += 15;
+                            }
+                            ItemMeta currentItemItemMeta = currentItem.getItemMeta();
+                            currentItemItemMeta.setLore(Arrays.asList("§7Time (in seconds) for voting time : §a" + game.getSettings().votingTime));
+                            currentItem.setItemMeta(currentItemItemMeta);
+                        } else if (currentMaterial.equals(Material.GOLDEN_SWORD)) {
+                            if (game.getSettings().killCooldown == 40.0) {
+                                game.getSettings().killCooldown = 10.0;
+                            } else {
+                                game.getSettings().killCooldown += 2.5;
+                            }
+                            ItemMeta currentItemItemMeta = currentItem.getItemMeta();
+                            currentItemItemMeta.setLore(Arrays.asList("§7Time (in seconds) between two kills for impostors : §a" + game.getSettings().killCooldown));
+                            currentItem.setItemMeta(currentItemItemMeta);
+                        } else if (currentMaterial.equals(Material.WARPED_SIGN)) {
+                            if (game.getSettings().commonTasks == 2) {
+                                game.getSettings().commonTasks = 0;
+                            } else {
+                                game.getSettings().commonTasks++;
+                            }
+                            ItemMeta currentItemItemMeta = currentItem.getItemMeta();
+                            currentItemItemMeta.setLore(Arrays.asList("§7Number of common tasks : §a" + game.getSettings().commonTasks));
+                            currentItem.setItemMeta(currentItemItemMeta);
+                        } else if (currentMaterial.equals(Material.SPRUCE_SIGN)) {
+                            if (game.getSettings().longTasks == 3) {
+                                game.getSettings().longTasks = 0;
+                            } else {
+                                game.getSettings().longTasks++;
+                            }
+                            ItemMeta currentItemItemMeta = currentItem.getItemMeta();
+                            currentItemItemMeta.setLore(Arrays.asList("§7Number of long tasks : §a" + game.getSettings().longTasks));
+                            currentItem.setItemMeta(currentItemItemMeta);
+                        } else if (currentMaterial.equals(Material.BIRCH_SIGN)) {
+                            if (game.getSettings().shortTasks == 5) {
+                                game.getSettings().shortTasks = 0;
+                            } else {
+                                game.getSettings().shortTasks++;
+                            }
+                            ItemMeta currentItemItemMeta = currentItem.getItemMeta();
+                            currentItemItemMeta.setLore(Arrays.asList("§7Number of short tasks : §a" + game.getSettings().shortTasks));
+                            currentItem.setItemMeta(currentItemItemMeta);
                         }
-                        ItemMeta currentItemItemMeta = currentItem.getItemMeta();
-                        currentItemItemMeta.setLore(Arrays.asList("§7Number of impostors : §a" + game.getSettings().impostors));
-                        currentItem.setItemMeta(currentItemItemMeta);
-                    } else if (currentMaterial.equals(Material.FEATHER)) {
-                        game.getSettings().confirmEjects = !game.getSettings().confirmEjects;
-                        ItemMeta currentItemItemMeta = currentItem.getItemMeta();
-                        currentItemItemMeta.setLore(Arrays.asList("§7Show people role at ejection : §a" + (game.getSettings().confirmEjects ? "On" : "Off")));
-                        currentItem.setItemMeta(currentItemItemMeta);
-                    } else if (currentMaterial.equals(Material.CRIMSON_BUTTON)) {
-                        if (game.getSettings().emergencyMeetings == 9) {
-                            game.getSettings().emergencyMeetings = 0;
-                        } else {
-                            game.getSettings().emergencyMeetings++;
-                        }
-                        ItemMeta currentItemItemMeta = currentItem.getItemMeta();
-                        currentItemItemMeta.setLore(Arrays.asList("§7Number of emergency meetings calls per person : §a" + game.getSettings().emergencyMeetings));
-                        currentItem.setItemMeta(currentItemItemMeta);
-                    } else if (currentMaterial.equals(Material.SOUL_TORCH)) {
-                        if (game.getSettings().emergencyCooldown == 40) {
-                            game.getSettings().emergencyCooldown = 10;
-                        } else {
-                            game.getSettings().emergencyCooldown += 2.5;
-                        }
-                        ItemMeta currentItemItemMeta = currentItem.getItemMeta();
-                        currentItemItemMeta.setLore(Arrays.asList("§7Time (in seconds) before enable emergency calls : §a" + game.getSettings().emergencyCooldown));
-                        currentItem.setItemMeta(currentItemItemMeta);
-                    } else if (currentMaterial.equals(Material.PAPER)) {
-                        if (game.getSettings().discussionTime == 30) {
-                            game.getSettings().discussionTime = 5;
-                        } else {
-                            game.getSettings().discussionTime += 5;
-                        }
-                        ItemMeta currentItemItemMeta = currentItem.getItemMeta();
-                        currentItemItemMeta.setLore(Arrays.asList("§7Time (in seconds) before enable voting time : §a" + game.getSettings().discussionTime));
-                        currentItem.setItemMeta(currentItemItemMeta);
-                    } else if (currentMaterial.equals(Material.FILLED_MAP)) {
-                        if (game.getSettings().votingTime == 240) {
-                            game.getSettings().votingTime = 30;
-                        } else {
-                            game.getSettings().votingTime += 15;
-                        }
-                        ItemMeta currentItemItemMeta = currentItem.getItemMeta();
-                        currentItemItemMeta.setLore(Arrays.asList("§7Time (in seconds) for voting time : §a" + game.getSettings().votingTime));
-                        currentItem.setItemMeta(currentItemItemMeta);
-                    } else if (currentMaterial.equals(Material.GOLDEN_SWORD)) {
-                        if (game.getSettings().killCooldown == 40.0) {
-                            game.getSettings().killCooldown = 10.0;
-                        } else {
-                            game.getSettings().killCooldown += 2.5;
-                        }
-                        ItemMeta currentItemItemMeta = currentItem.getItemMeta();
-                        currentItemItemMeta.setLore(Arrays.asList("§7Time (in seconds) between two kills for impostors : §a" + game.getSettings().killCooldown));
-                        currentItem.setItemMeta(currentItemItemMeta);
-                    } else if (currentMaterial.equals(Material.WARPED_SIGN)) {
-                        if (game.getSettings().commonTasks == 2) {
-                            game.getSettings().commonTasks = 0;
-                        } else {
-                            game.getSettings().commonTasks++;
-                        }
-                        ItemMeta currentItemItemMeta = currentItem.getItemMeta();
-                        currentItemItemMeta.setLore(Arrays.asList("§7Number of common tasks : §a" + game.getSettings().commonTasks));
-                        currentItem.setItemMeta(currentItemItemMeta);
-                    } else if (currentMaterial.equals(Material.SPRUCE_SIGN)) {
-                        if (game.getSettings().longTasks == 3) {
-                            game.getSettings().longTasks = 0;
-                        } else {
-                            game.getSettings().longTasks++;
-                        }
-                        ItemMeta currentItemItemMeta = currentItem.getItemMeta();
-                        currentItemItemMeta.setLore(Arrays.asList("§7Number of long tasks : §a" + game.getSettings().longTasks));
-                        currentItem.setItemMeta(currentItemItemMeta);
-                    } else if (currentMaterial.equals(Material.BIRCH_SIGN)) {
-                        if (game.getSettings().shortTasks == 5) {
-                            game.getSettings().shortTasks = 0;
-                        } else {
-                            game.getSettings().shortTasks++;
-                        }
-                        ItemMeta currentItemItemMeta = currentItem.getItemMeta();
-                        currentItemItemMeta.setLore(Arrays.asList("§7Number of short tasks : §a" + game.getSettings().shortTasks));
-                        currentItem.setItemMeta(currentItemItemMeta);
                     }
                 }
             }

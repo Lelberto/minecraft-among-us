@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -107,48 +108,50 @@ public class ColorInventory extends BaseInventory {
         public void onClick(InventoryClickEvent e) {
             if (e.getView().getTitle().equals("Change color")) {
                 e.setCancelled(true);
-                Player player = (Player) e.getWhoClicked();
-                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
-                ItemStack currentItem = e.getCurrentItem();
-                if (currentItem != null) {
-                    List<Color> availableColors = Game.getInstance().getAvailableColors();
-                    Material currentMaterial = currentItem.getType();
-                    if (currentMaterial.equals(Material.RED_WOOL) && availableColors.contains(Color.RED)) {
-                        auPlayer.setColor(Color.RED);
-                        player.closeInventory();
-                    } else if (currentMaterial.equals(Material.BLUE_WOOL) && availableColors.contains(Color.BLUE)) {
-                        auPlayer.setColor(Color.BLUE);
-                        player.closeInventory();
-                    } else if (currentMaterial.equals(Material.GREEN_WOOL) && availableColors.contains(Color.GREEN)) {
-                        auPlayer.setColor(Color.GREEN);
-                        player.closeInventory();
-                    } else if (currentMaterial.equals(Material.PINK_WOOL) && availableColors.contains(Color.PINK)) {
-                        auPlayer.setColor(Color.PINK);
-                        player.closeInventory();
-                    } else if (currentMaterial.equals(Material.ORANGE_WOOL) && availableColors.contains(Color.ORANGE)) {
-                        auPlayer.setColor(Color.ORANGE);
-                        player.closeInventory();
-                    } else if (currentMaterial.equals(Material.YELLOW_WOOL) && availableColors.contains(Color.YELLOW)) {
-                        auPlayer.setColor(Color.YELLOW);
-                        player.closeInventory();
-                    } else if (currentMaterial.equals(Material.BLACK_WOOL) && availableColors.contains(Color.BLACK)) {
-                        auPlayer.setColor(Color.BLACK);
-                        player.closeInventory();
-                    } else if (currentMaterial.equals(Material.WHITE_WOOL) && availableColors.contains(Color.WHITE)) {
-                        auPlayer.setColor(Color.WHITE);
-                        player.closeInventory();
-                    } else if (currentMaterial.equals(Material.PURPLE_WOOL) && availableColors.contains(Color.PURPLE)) {
-                        auPlayer.setColor(Color.PURPLE);
-                        player.closeInventory();
-                    } else if (currentMaterial.equals(Material.BROWN_WOOL) && availableColors.contains(Color.BROWN)) {
-                        auPlayer.setColor(Color.BROWN);
-                        player.closeInventory();
-                    } else if (currentMaterial.equals(Material.CYAN_WOOL) && availableColors.contains(Color.CYAN)) {
-                        auPlayer.setColor(Color.CYAN);
-                        player.closeInventory();
-                    } else if (currentMaterial.equals(Material.LIME_WOOL) && availableColors.contains(Color.LIME)) {
-                        auPlayer.setColor(Color.LIME);
-                        player.closeInventory();
+                if (e.getAction().equals(InventoryAction.PICKUP_ALL)) {
+                    Player player = (Player) e.getWhoClicked();
+                    AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
+                    ItemStack currentItem = e.getCurrentItem();
+                    if (currentItem != null) {
+                        List<Color> availableColors = Game.getInstance().getAvailableColors();
+                        Material currentMaterial = currentItem.getType();
+                        if (currentMaterial.equals(Material.RED_WOOL) && availableColors.contains(Color.RED)) {
+                            auPlayer.setColor(Color.RED);
+                            player.closeInventory();
+                        } else if (currentMaterial.equals(Material.BLUE_WOOL) && availableColors.contains(Color.BLUE)) {
+                            auPlayer.setColor(Color.BLUE);
+                            player.closeInventory();
+                        } else if (currentMaterial.equals(Material.GREEN_WOOL) && availableColors.contains(Color.GREEN)) {
+                            auPlayer.setColor(Color.GREEN);
+                            player.closeInventory();
+                        } else if (currentMaterial.equals(Material.PINK_WOOL) && availableColors.contains(Color.PINK)) {
+                            auPlayer.setColor(Color.PINK);
+                            player.closeInventory();
+                        } else if (currentMaterial.equals(Material.ORANGE_WOOL) && availableColors.contains(Color.ORANGE)) {
+                            auPlayer.setColor(Color.ORANGE);
+                            player.closeInventory();
+                        } else if (currentMaterial.equals(Material.YELLOW_WOOL) && availableColors.contains(Color.YELLOW)) {
+                            auPlayer.setColor(Color.YELLOW);
+                            player.closeInventory();
+                        } else if (currentMaterial.equals(Material.BLACK_WOOL) && availableColors.contains(Color.BLACK)) {
+                            auPlayer.setColor(Color.BLACK);
+                            player.closeInventory();
+                        } else if (currentMaterial.equals(Material.WHITE_WOOL) && availableColors.contains(Color.WHITE)) {
+                            auPlayer.setColor(Color.WHITE);
+                            player.closeInventory();
+                        } else if (currentMaterial.equals(Material.PURPLE_WOOL) && availableColors.contains(Color.PURPLE)) {
+                            auPlayer.setColor(Color.PURPLE);
+                            player.closeInventory();
+                        } else if (currentMaterial.equals(Material.BROWN_WOOL) && availableColors.contains(Color.BROWN)) {
+                            auPlayer.setColor(Color.BROWN);
+                            player.closeInventory();
+                        } else if (currentMaterial.equals(Material.CYAN_WOOL) && availableColors.contains(Color.CYAN)) {
+                            auPlayer.setColor(Color.CYAN);
+                            player.closeInventory();
+                        } else if (currentMaterial.equals(Material.LIME_WOOL) && availableColors.contains(Color.LIME)) {
+                            auPlayer.setColor(Color.LIME);
+                            player.closeInventory();
+                        }
                     }
                 }
             }

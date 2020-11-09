@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -49,12 +50,14 @@ public class HatInventory extends BaseInventory {
         public void onClick(InventoryClickEvent e) {
             if (e.getView().getTitle().equals("Hats")) {
                 e.setCancelled(true);
-                Player player = (Player) e.getWhoClicked();
-                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
-                ItemStack currentItem = e.getCurrentItem();
-                if (currentItem != null) {
-                    player.getInventory().setHelmet(currentItem);
-                    player.closeInventory();
+                if (e.getAction().equals(InventoryAction.PICKUP_ALL)) {
+                    Player player = (Player) e.getWhoClicked();
+                    AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
+                    ItemStack currentItem = e.getCurrentItem();
+                    if (currentItem != null) {
+                        player.getInventory().setHelmet(currentItem);
+                        player.closeInventory();
+                    }
                 }
             }
         }

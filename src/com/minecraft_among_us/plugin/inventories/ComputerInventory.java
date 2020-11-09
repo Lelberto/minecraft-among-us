@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -47,17 +48,19 @@ public class ComputerInventory extends BaseInventory {
         public void onClick(InventoryClickEvent e) {
             if (e.getView().getTitle().equals("Computer")) {
                 e.setCancelled(true);
-                Player player = (Player) e.getWhoClicked();
-                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
-                ItemStack currentItem = e.getCurrentItem();
-                if (currentItem != null) {
-                    Material currentMaterial = currentItem.getType();
-                    if (currentMaterial.equals(Material.LEATHER_HELMET)) {
-                        player.openInventory(new HatInventory(auPlayer).create());
-                    } else if (currentMaterial.equals(Material.REDSTONE)) {
-                        player.openInventory(new GameSettingsInventory(auPlayer).create());
-                    } else if (currentMaterial.equals(Material.RED_WOOL)) {
-                        player.openInventory(new ColorInventory(auPlayer).create());
+                if (e.getAction().equals(InventoryAction.PICKUP_ALL)) {
+                    Player player = (Player) e.getWhoClicked();
+                    AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
+                    ItemStack currentItem = e.getCurrentItem();
+                    if (currentItem != null) {
+                        Material currentMaterial = currentItem.getType();
+                        if (currentMaterial.equals(Material.LEATHER_HELMET)) {
+                            player.openInventory(new HatInventory(auPlayer).create());
+                        } else if (currentMaterial.equals(Material.REDSTONE)) {
+                            player.openInventory(new GameSettingsInventory(auPlayer).create());
+                        } else if (currentMaterial.equals(Material.RED_WOOL)) {
+                            player.openInventory(new ColorInventory(auPlayer).create());
+                        }
                     }
                 }
             }
