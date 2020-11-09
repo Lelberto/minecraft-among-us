@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -24,64 +23,65 @@ public class ColorInventory extends BaseInventory {
 
     @Override
     public Inventory create() {
+        List<Color> availableColors = Game.getInstance().getAvailableColors();
         Inventory inventory = Bukkit.createInventory(null, InventoryType.CHEST, "Change color");
 
-        ItemStack redItem = new ItemStack(Material.RED_WOOL);
+        ItemStack redItem = new ItemStack(availableColors.contains(Color.RED) ? Material.RED_WOOL : Material.BARRIER);
         ItemMeta redItemMeta = redItem.getItemMeta();
         redItemMeta.setDisplayName("§cRed");
         redItem.setItemMeta(redItemMeta);
 
-        ItemStack blueItem = new ItemStack(Material.BLUE_WOOL);
+        ItemStack blueItem = new ItemStack(availableColors.contains(Color.BLUE) ? Material.BLUE_WOOL : Material.BARRIER);
         ItemMeta blueItemMeta = blueItem.getItemMeta();
         blueItemMeta.setDisplayName("§1Blue");
         blueItem.setItemMeta(blueItemMeta);
 
-        ItemStack greenItem = new ItemStack(Material.GREEN_WOOL);
+        ItemStack greenItem = new ItemStack(availableColors.contains(Color.GREEN) ? Material.GREEN_WOOL : Material.BARRIER);
         ItemMeta greenItemMeta = greenItem.getItemMeta();
         greenItemMeta.setDisplayName("§2Green");
         greenItem.setItemMeta(greenItemMeta);
 
-        ItemStack pinkItem = new ItemStack(Material.PINK_WOOL);
+        ItemStack pinkItem = new ItemStack(availableColors.contains(Color.PINK) ? Material.PINK_WOOL : Material.BARRIER);
         ItemMeta pinkItemMeta = pinkItem.getItemMeta();
         pinkItemMeta.setDisplayName("§dPink");
         pinkItem.setItemMeta(pinkItemMeta);
 
-        ItemStack orangeItem = new ItemStack(Material.ORANGE_WOOL);
+        ItemStack orangeItem = new ItemStack(availableColors.contains(Color.ORANGE) ? Material.ORANGE_WOOL : Material.BARRIER);
         ItemMeta orangeItemMeta = orangeItem.getItemMeta();
-        orangeItemMeta.setDisplayName("§c6Orange");
+        orangeItemMeta.setDisplayName("§6Orange");
         orangeItem.setItemMeta(orangeItemMeta);
 
-        ItemStack yellowItem = new ItemStack(Material.YELLOW_WOOL);
+        ItemStack yellowItem = new ItemStack(availableColors.contains(Color.YELLOW) ? Material.YELLOW_WOOL : Material.BARRIER);
         ItemMeta yellowItemMeta = yellowItem.getItemMeta();
         yellowItemMeta.setDisplayName("§eYellow");
         yellowItem.setItemMeta(yellowItemMeta);
 
-        ItemStack blackItem = new ItemStack(Material.BLACK_WOOL);
+        ItemStack blackItem = new ItemStack(availableColors.contains(Color.BLACK) ? Material.BLACK_WOOL : Material.BARRIER);
         ItemMeta blackItemMeta = blackItem.getItemMeta();
         blackItemMeta.setDisplayName("§0Black");
         blackItem.setItemMeta(blackItemMeta);
 
-        ItemStack whiteItem = new ItemStack(Material.WHITE_WOOL);
+        ItemStack whiteItem = new ItemStack(availableColors.contains(Color.WHITE) ? Material.WHITE_WOOL : Material.BARRIER);
         ItemMeta whiteItemMeta = whiteItem.getItemMeta();
         whiteItemMeta.setDisplayName("§fWhite");
         whiteItem.setItemMeta(whiteItemMeta);
 
-        ItemStack purpleItem = new ItemStack(Material.PURPLE_WOOL);
+        ItemStack purpleItem = new ItemStack(availableColors.contains(Color.PURPLE) ? Material.PURPLE_WOOL : Material.BARRIER);
         ItemMeta purpleItemMeta = purpleItem.getItemMeta();
         purpleItemMeta.setDisplayName("§5Purple");
         purpleItem.setItemMeta(purpleItemMeta);
 
-        ItemStack brownItem = new ItemStack(Material.BROWN_WOOL);
+        ItemStack brownItem = new ItemStack(availableColors.contains(Color.BROWN) ? Material.BROWN_WOOL : Material.BARRIER);
         ItemMeta brownItemMeta = brownItem.getItemMeta();
         brownItemMeta.setDisplayName("§8Brown");
         brownItem.setItemMeta(brownItemMeta);
 
-        ItemStack cyanItem = new ItemStack(Material.CYAN_WOOL);
+        ItemStack cyanItem = new ItemStack(availableColors.contains(Color.CYAN) ? Material.CYAN_WOOL : Material.BARRIER);
         ItemMeta cyanItemMeta = cyanItem.getItemMeta();
         cyanItemMeta.setDisplayName("§bCyan");
         cyanItem.setItemMeta(cyanItemMeta);
 
-        ItemStack limeItem = new ItemStack(Material.LIME_WOOL);
+        ItemStack limeItem = new ItemStack(availableColors.contains(Color.LIME) ? Material.LIME_WOOL : Material.BARRIER);
         ItemMeta limeItemMeta = limeItem.getItemMeta();
         limeItemMeta.setDisplayName("§aLime");
         limeItem.setItemMeta(limeItemMeta);
