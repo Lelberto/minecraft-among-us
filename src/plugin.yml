@@ -1,5 +1,5 @@
 main: "com.minecraft_among_us.plugin.Plugin"
 name: "MinecraftAmongUs"
 version: "1.0.0"
-author: "Lelberto"
+authors: ["Lelberto", "MrPopop69"]
 api-version: "1.16"
