@@ -1,6 +1,5 @@
 package com.minecraft_among_us.plugin;
 
-import com.minecraft_among_us.plugin.commands.TestCommand;
 import com.minecraft_among_us.plugin.game.Game;
 import com.minecraft_among_us.plugin.inventories.ColorInventory;
 import com.minecraft_among_us.plugin.inventories.ComputerInventory;
@@ -38,11 +37,9 @@ public class Plugin extends JavaPlugin {
     public void onEnable() {
         super.onEnable();
 
-        // Commands registration
-        this.getCommand("test").setExecutor(new TestCommand());
-
         // Listeners registration
         Bukkit.getPluginManager().registerEvents(new Game.Listener(), this);
+        Bukkit.getPluginManager().registerEvents(new AmongUsPlayer.Listener(), this);
         Bukkit.getPluginManager().registerEvents(new ComputerInventory.Listener(), this);
         Bukkit.getPluginManager().registerEvents(new HatInventory.Listener(), this);
         Bukkit.getPluginManager().registerEvents(new GameSettingsInventory.Listener(), this);
@@ -53,7 +50,10 @@ public class Plugin extends JavaPlugin {
         // TODO Used for debug only, remove it in production
         // Add online players in game to avoid reconnect
         Game game = Game.getInstance();
-        Bukkit.getOnlinePlayers().forEach(player -> game.getPlayers().add(new AmongUsPlayer(player.getUniqueId(), game.randomColor())));
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            player.setCollidable(false);
+            game.getPlayers().add(new AmongUsPlayer(player.getUniqueId(), game.randomColor()));
+        });
     }
 
     @Override

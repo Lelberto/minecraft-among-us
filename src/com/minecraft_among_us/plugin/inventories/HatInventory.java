@@ -55,7 +55,8 @@ public class HatInventory extends BaseInventory {
                     AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
                     ItemStack currentItem = e.getCurrentItem();
                     if (currentItem != null) {
-                        player.getInventory().setHelmet(currentItem);
+                        auPlayer.setHat(e.getCurrentItem());
+                        auPlayer.refreshEquipment();
                         player.closeInventory();
                     }
                 }

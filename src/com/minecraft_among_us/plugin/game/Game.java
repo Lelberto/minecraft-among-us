@@ -6,19 +6,20 @@ import com.minecraft_among_us.plugin.config.ConfigurationManager;
 import com.minecraft_among_us.plugin.inventories.ComputerInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class Game {
 
@@ -73,6 +74,15 @@ public class Game {
         return availableColors.get(r.nextInt(availableColors.size()));
     }
 
+    public List<Location> getVentgroup(Location ventLocation) {
+        for (List<Location> ventGroup : ConfigurationManager.getInstance().vents) {
+            if (ventGroup.contains(ventLocation)) {
+                return ventGroup;
+            }
+        }
+        return null;
+    }
+
     public static class Listener implements org.bukkit.event.Listener {
 
         @EventHandler
@@ -82,6 +92,7 @@ public class Game {
             if (game.getState() == GameState.HUB) {
                 e.setJoinMessage("§7[§a+§7]§r §6" + player.getName());
                 player.teleport(ConfigurationManager.getInstance().hubSpawn);
+                player.setCollidable(false);
                 game.players.add(new AmongUsPlayer(player.getUniqueId(), game.randomColor()));
             } else {
                 e.setJoinMessage(null);
@@ -95,6 +106,11 @@ public class Game {
             Player player = e.getPlayer();
             game.players.remove(AmongUsPlayer.getPlayer(player.getUniqueId()));
             e.setQuitMessage("§7[§c-§7]§r §6" + player.getName());
+        }
+
+        @EventHandler
+        public void onSprint(FoodLevelChangeEvent e) {
+            e.setCancelled(true);
         }
 
         @EventHandler

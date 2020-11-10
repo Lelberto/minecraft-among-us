@@ -8,6 +8,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ConfigurationManager {
 
@@ -24,10 +27,22 @@ public class ConfigurationManager {
     private final File configFile;
     public Location hubSpawn;
     public Location computerLocation;
+    public List<List<Location>> vents;
 
     private ConfigurationManager(File configFile) {
         this.configFile = configFile;
         this.hubSpawn = new Location(Plugin.getDefaultWorld(), 0, 100, 0);
+        this.computerLocation = new Location(Plugin.getDefaultWorld(), 0, 100, 0);
+        this.vents = Arrays.asList(
+                Arrays.asList(
+                        new Location(Plugin.getDefaultWorld(), 10, 100, 0),
+                        new Location(Plugin.getDefaultWorld(), 20, 100, 0)
+                ),
+                Arrays.asList(
+                        new Location(Plugin.getDefaultWorld(), 0, 100, 10),
+                        new Location(Plugin.getDefaultWorld(), 0, 100, 20)
+                )
+        );
 
         // Configuration file creation
         try {
@@ -37,6 +52,7 @@ public class ConfigurationManager {
                 hubSection.set("spawn", this.hubSpawn);
                 ConfigurationSection computerSection = config.createSection("computer");
                 computerSection.set("location", this.computerLocation);
+                config.set("vents", this.vents);
                 config.save(configFile);
             }
         } catch (IOException ex) {
@@ -50,5 +66,6 @@ public class ConfigurationManager {
         this.hubSpawn = hubSection.getLocation("spawn");
         ConfigurationSection computerSection = config.getConfigurationSection("computer");
         this.computerLocation = computerSection.getLocation("location");
+        this.vents = (List<List<Location>>) config.get("vents");
     }
 }

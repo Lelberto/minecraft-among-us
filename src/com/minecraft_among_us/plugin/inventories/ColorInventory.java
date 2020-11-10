@@ -152,6 +152,8 @@ public class ColorInventory extends BaseInventory {
                             auPlayer.setColor(Color.LIME);
                             player.closeInventory();
                         }
+                        auPlayer.refreshEquipment();
+                        auPlayer.refreshBar();
                     }
                 }
             }
