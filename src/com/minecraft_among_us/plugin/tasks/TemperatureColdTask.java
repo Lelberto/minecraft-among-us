@@ -17,7 +17,12 @@ import java.util.Random;
 public class TemperatureColdTask extends TemperatureTask {
 
     public TemperatureColdTask(AmongUsPlayer auPlayer) {
-        super(ConfigurationManager.getInstance().temperatureColdTaskSettings.name, ConfigurationManager.getInstance().temperatureColdTaskSettings.description, TaskType.SHORT, auPlayer);
+        super(
+                ConfigurationManager.getInstance().temperatureColdTaskSettings.name,
+                ConfigurationManager.getInstance().temperatureColdTaskSettings.description,
+                ConfigurationManager.getInstance().temperatureColdTaskSettings.type,
+                auPlayer
+        );
     }
 
     @Override
