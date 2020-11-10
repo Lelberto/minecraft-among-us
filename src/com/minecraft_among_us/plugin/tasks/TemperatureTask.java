@@ -1,37 +1,29 @@
 package com.minecraft_among_us.plugin.tasks;
 
 import com.minecraft_among_us.plugin.AmongUsPlayer;
-import com.minecraft_among_us.plugin.Plugin;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Random;
+public abstract class TemperatureTask extends Task {
 
-public class TemperatureTask extends Task {
+    protected final int expectedTemperature;
+    protected int currentTemperature;
+    protected Inventory inventory;
 
-    private final int expectedTemperature;
-    private int currentTemperature;
-    private Inventory inventory;
-
-    public TemperatureTask(AmongUsPlayer auPlayer) {
-        super("Temperature log", "Ouais", TaskType.SHORT, auPlayer);
-        Random rand = new Random();
-        this.expectedTemperature = rand.nextInt(32) + 16;
-        this.currentTemperature = rand.nextBoolean() ? (this.expectedTemperature + rand.nextInt(16) + 1) : (this.expectedTemperature - rand.nextInt(16) + 1);
+    public TemperatureTask(String name, String description, TaskType type, AmongUsPlayer auPlayer) {
+        super(name, description, type, auPlayer);
+        int[] temperatures = this.generateTemperatures();
+        this.expectedTemperature = temperatures[0];
+        this.currentTemperature = temperatures[1];
         this.inventory = this.createInventory();
     }
+
+    protected abstract int[] generateTemperatures();
 
     @Override
     public void execute() {
@@ -42,7 +34,6 @@ public class TemperatureTask extends Task {
     public void finish() {
         super.finish();
         ((Player) this.auPlayer.toBukkitPlayer()).closeInventory();
-        Bukkit.broadcastMessage("Point faible, TRO FORT");
     }
 
     private Inventory createInventory() {
@@ -75,7 +66,7 @@ public class TemperatureTask extends Task {
         return inventory;
     }
 
-    private void change(AmongUsPlayer auPlayer, boolean add) {
+    protected void change(boolean add) {
         if (add && this.currentTemperature < 64) {
             this.currentTemperature++;
         } else if (!add && this.currentTemperature > 1) {
@@ -88,7 +79,7 @@ public class TemperatureTask extends Task {
         }
     }
 
-    private void refreshInventory() {
+    protected void refreshInventory() {
         ItemStack currentTemperatureItem = new ItemStack(Material.ORANGE_CONCRETE, this.currentTemperature);
         ItemMeta currentTemperatureItemMeta = currentTemperatureItem.getItemMeta();
         currentTemperatureItemMeta.setDisplayName("§6Current temperature");
@@ -101,41 +92,5 @@ public class TemperatureTask extends Task {
 
         this.inventory.setItem(5, currentTemperatureItem);
         this.inventory.setItem(0, expectedTemperatureItem);
-    }
-
-    public static class Listener implements org.bukkit.event.Listener {
-
-        @EventHandler
-        public void onTaskLaunch(PlayerInteractEvent e) {
-            if (e.getHand().equals(EquipmentSlot.HAND) && e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getClickedBlock().getLocation().equals(new Location(Plugin.getDefaultWorld(), -299, 31, -148))) {
-                Player player = e.getPlayer();
-                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
-                Task task = auPlayer.getTask("Temperature log");
-                if (task != null) {
-                    task.execute();
-                }
-            }
-        }
-
-        @EventHandler
-        public void onClick(InventoryClickEvent e) {
-            if (e.getView().getTitle().equals("Temperature log")) {
-                e.setCancelled(true);
-                if (e.getAction().equals(InventoryAction.PICKUP_ALL)) {
-                    Player player = (Player) e.getWhoClicked();
-                    AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
-                    ItemStack currentItem = e.getCurrentItem();
-                    if (currentItem != null) {
-                        TemperatureTask task = (TemperatureTask) auPlayer.getTask("Temperature log");
-                        Material currentMaterial = currentItem.getType();
-                        if (currentMaterial.equals(Material.GREEN_CONCRETE)) {
-                            task.change(auPlayer, true);
-                        } else if (currentMaterial.equals(Material.RED_CONCRETE)) {
-                            task.change(auPlayer, false);
-                        }
-                    }
-                }
-            }
-        }
     }
 }
