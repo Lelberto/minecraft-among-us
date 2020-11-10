@@ -40,3 +40,11 @@ computer:
         x: 0
         y: 100
         z: 0
+    simon:
+      name: "Simon"
+      description: "Memorize and repeat the Simon"
+      type: "long"
+      location:
+        x: 0
+        y: 100
+        z: 0

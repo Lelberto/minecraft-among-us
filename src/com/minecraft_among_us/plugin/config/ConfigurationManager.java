@@ -30,6 +30,7 @@ public class ConfigurationManager {
     public List<List<Location>> vents;
     public TaskSettings temperatureHotTaskSettings;
     public TaskSettings temperatureColdTaskSettings;
+    public TaskSettings simonTaskSettings;
 
     private ConfigurationManager(File configFile) {
         this.configFile = configFile;
@@ -47,6 +48,7 @@ public class ConfigurationManager {
         );
         this.temperatureHotTaskSettings = new TaskSettings("Lava temperature log", "Update the temperature log", TaskType.SHORT, new Location(Plugin.getDefaultWorld(), 0, 100, 0));
         this.temperatureColdTaskSettings = new TaskSettings("Laboratory temperature log", "Update the temperature log", TaskType.SHORT, new Location(Plugin.getDefaultWorld(), 0, 100, 0));
+        this.simonTaskSettings = new TaskSettings("Simon", "Memorize and repeat the Simon", TaskType.LONG, new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0));
 
         // Configuration file creation
         try {
@@ -68,6 +70,11 @@ public class ConfigurationManager {
                 temperatureColdTaskSection.set("description", this.temperatureColdTaskSettings.description);
                 temperatureColdTaskSection.set("type", this.temperatureColdTaskSettings.type.name().toLowerCase());
                 temperatureColdTaskSection.set("location", this.temperatureColdTaskSettings.location);
+                ConfigurationSection simonTaskSection = tasksSection.createSection("simon");
+                simonTaskSection.set("name", simonTaskSettings.name);
+                simonTaskSection.set("description", simonTaskSettings.description);
+                simonTaskSection.set("type", simonTaskSettings.type.name().toLowerCase());
+                simonTaskSection.set("location", simonTaskSettings.location);
                 config.save(configFile);
             }
         } catch (IOException ex) {
@@ -95,5 +102,13 @@ public class ConfigurationManager {
                 temperatureColdTaskSection.getString("description"),
                 TaskType.valueOf(temperatureColdTaskSection.getString("type").toUpperCase()),
                 temperatureColdTaskSection.getLocation("location"));
+        ConfigurationSection simonTaskSection = tasksSection.getConfigurationSection("simon");
+        this.simonTaskSettings = new TaskSettings(
+                simonTaskSection.getString("name"),
+                simonTaskSection.getString("description"),
+                TaskType.valueOf(simonTaskSection.getString("type").toUpperCase()),
+                simonTaskSection.getLocation("location")
+        );
+        Bukkit.broadcastMessage(ConfigurationManager.getInstance().simonTaskSettings.location.toString());
     }
 }
