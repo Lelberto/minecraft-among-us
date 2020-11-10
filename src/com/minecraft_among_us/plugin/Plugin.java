@@ -34,12 +34,19 @@ public class Plugin extends JavaPlugin {
     @Override
     public void onEnable() {
         super.onEnable();
+
         // Listeners registration
         Bukkit.getPluginManager().registerEvents(new Game.Listener(), this);
+        Bukkit.getPluginManager().registerEvents(new AmongUsPlayer.Listener(), this);
         Bukkit.getPluginManager().registerEvents(new ComputerInventory.Listener(), this);
         Bukkit.getPluginManager().registerEvents(new HatInventory.Listener(), this);
         Bukkit.getPluginManager().registerEvents(new GameSettingsInventory.Listener(), this);
         Bukkit.getPluginManager().registerEvents(new ColorInventory.Listener(), this);
+
+        // TODO Used for debug only, remove it in production
+        // Add online players in game to avoid reconnect
+        Game game = Game.getInstance();
+        Bukkit.getOnlinePlayers().forEach(player -> game.getPlayers().add(new AmongUsPlayer(player.getUniqueId(), game.randomColor())));
     }
 
     @Override
