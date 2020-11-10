@@ -13,6 +13,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -292,7 +293,6 @@ public class AmongUsPlayer {
                     player.setWalkSpeed(0.2F);
                     player.setFoodLevel(20);
                     player.removePotionEffect(PotionEffectType.JUMP);
-                    player.teleport(ventLocation.clone().add(new Vector(0.5, 0.1, 0.5)));
                 } else {
                     auPlayer.setCurrentVentGroup(Game.getInstance().getVentgroup(ventLocation));
                     auPlayer.setCurrentVent(ventLocation);
@@ -320,39 +320,30 @@ public class AmongUsPlayer {
         }
 
         @EventHandler
-        public void onClick(InventoryClickEvent e) {
-            if (e.getView().getTitle().equals("Crafting") && e.getWhoClicked().getGameMode().equals(GameMode.ADVENTURE)) {
-                e.setCancelled(true);
-                if (e.getAction().equals(InventoryAction.PICKUP_ALL)) {
-                    Player player = (Player) e.getWhoClicked();
-                    AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
-                    ItemStack currentItem = e.getCurrentItem();
-                    if (currentItem != null) {
-                        ItemMeta currentItemMeta = currentItem.getItemMeta();
-                        List<Location> ventGroup = auPlayer.getCurrentVentGroup();
-                        Location currentVent = auPlayer.getCurrentVent();
-                        if (currentItemMeta.getDisplayName().equals("Previous vent")) {
-                            Location newVent = null;
-                            if (ventGroup.indexOf(currentVent) == 0) {
-                                newVent = ventGroup.get(ventGroup.size() - 1);
-                            } else {
-                                newVent = ventGroup.get(ventGroup.indexOf(currentVent) - 1);
-                            }
-                            player.teleport(newVent.clone().add(new Vector(0.5, 0.1, 0.5)));
-                            auPlayer.setCurrentVent(newVent);
-                        } else if (currentItemMeta.getDisplayName().equals("Next vent")) {
-                            Location newVent = null;
-                            if (ventGroup.indexOf(currentVent) == ventGroup.size() - 1) {
-                                newVent = ventGroup.get(0);
-                            } else {
-                                newVent = ventGroup.get(ventGroup.indexOf(currentVent) + 1);
-                            }
-                            player.teleport(newVent.clone().add(new Vector(0.5, 0.1, 0.5)));
-                            auPlayer.setCurrentVent(newVent);
-                        }
-                        player.closeInventory();
+        public void onventSwitch(PlayerItemHeldEvent e) {
+            Player player = e.getPlayer();
+            AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
+            if (auPlayer.isInVent()) {
+                List<Location> ventGroup = auPlayer.getCurrentVentGroup();
+                Location currentVent = auPlayer.getCurrentVent();
+                Location newVent = null;
+                int previousSlot = e.getPreviousSlot();
+                int newSlot = e.getNewSlot();
+                if (newSlot < previousSlot) {
+                    if (ventGroup.indexOf(currentVent) == 0) {
+                        newVent = ventGroup.get(ventGroup.size() - 1);
+                    } else {
+                        newVent = ventGroup.get(ventGroup.indexOf(currentVent) - 1);
+                    }
+                } else if (newSlot > previousSlot) {
+                    if (ventGroup.indexOf(currentVent) == ventGroup.size() - 1) {
+                        newVent = ventGroup.get(0);
+                    } else {
+                        newVent = ventGroup.get(ventGroup.indexOf(currentVent) + 1);
                     }
                 }
+                player.teleport(newVent.clone().add(new Vector(0.5, 0.1, 0.5)).setDirection(player.getLocation().getDirection()));
+                auPlayer.setCurrentVent(newVent);
             }
         }
     }
