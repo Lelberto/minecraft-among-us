@@ -92,6 +92,7 @@ public class Game {
             if (game.getState() == GameState.HUB) {
                 e.setJoinMessage("§7[§a+§7]§r §6" + player.getName());
                 player.teleport(ConfigurationManager.getInstance().hubSpawn);
+                player.setCollidable(false);
                 game.players.add(new AmongUsPlayer(player.getUniqueId(), game.randomColor()));
             } else {
                 e.setJoinMessage(null);
