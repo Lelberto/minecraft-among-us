@@ -160,7 +160,7 @@ public class SimonTask extends Task {
 
     private void markSuccessfulRoundsAsSuccessful() {
         for (int i = 0; i < currentRound; i++) {
-            this.markRoundAsSuccessful(4 + i);
+            this.markRoundAsSuccessful(i);
         }
     }
 
