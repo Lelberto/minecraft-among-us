@@ -2,6 +2,7 @@ package com.minecraft_among_us.plugin.tasks;
 
 import com.minecraft_among_us.plugin.AmongUsPlayer;
 import com.minecraft_among_us.plugin.Plugin;
+import com.mysql.fabric.xmlrpc.base.Array;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,12 +18,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 public class SimonTask extends Task {
 
     private final static String TASK_NAME = "Simon";
+    private final ArrayList<Integer> slots = new ArrayList<Integer>(Arrays.asList(0,1,2,9,10,11,18,19,20));
 
     private Inventory inventory;
     private List<Integer> path;
@@ -52,10 +55,10 @@ public class SimonTask extends Task {
     }
 
     private Inventory createInventory() {
-        Inventory inventory = Bukkit.createInventory(null, InventoryType.DROPPER, this.name);
+        Inventory inventory = Bukkit.createInventory(null, InventoryType.CHEST, this.name);
 
-        for (int i = 0; i < 9; i++) {
-            this.setUntouchedItem(inventory, i);
+        for (int slot: slots) {
+            this.setUntouchedItem(inventory, slot);
         }
 
         return inventory;
@@ -63,10 +66,11 @@ public class SimonTask extends Task {
 
     private ArrayList<Integer> createPath() {
         Random random = new Random();
+
         ArrayList<Integer> path = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            int slot = random.nextInt(9);
-            path.add(slot);
+            int step = slots.get(random.nextInt(9));
+            path.add(step);
         }
         return path;
     }
@@ -140,23 +144,23 @@ public class SimonTask extends Task {
     }
 
     private void markRoundAsSuccessful(int round) {
-        ((Player) this.auPlayer.toBukkitPlayer()).getInventory().setItem(round, new ItemStack(Material.GREEN_CONCRETE) );
+       this.inventory.setItem(4 + round, new ItemStack(Material.GREEN_CONCRETE) );
     }
 
     private void markRoundAsFailed() {
-        ((Player) this.auPlayer.toBukkitPlayer()).getInventory().setItem(this.currentRound, new ItemStack(Material.RED_CONCRETE) );
+        this.inventory.setItem(4 + this.currentRound, new ItemStack(Material.RED_CONCRETE) );
     }
 
 
     private void markAllRoundAsPending() {
         for (int i = 0; i < nbRounds; i++) {
-            ((Player) this.auPlayer.toBukkitPlayer()).getInventory().setItem(i, new ItemStack(Material.GRAY_CONCRETE) );
+            this.inventory.setItem(4 + i, new ItemStack(Material.GRAY_CONCRETE) );
         }
     }
 
     private void markSuccessfulRoundsAsSuccessful() {
         for (int i = 0; i < currentRound; i++) {
-            this.markRoundAsSuccessful(i);
+            this.markRoundAsSuccessful(4 + i);
         }
     }
 
