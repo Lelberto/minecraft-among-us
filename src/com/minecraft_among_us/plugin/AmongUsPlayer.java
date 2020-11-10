@@ -38,6 +38,7 @@ public class AmongUsPlayer {
     private boolean impostor;
     private List<Task> tasks;
     private List<Location> currentVentGroup;
+    private Location currentVent;
     private ItemStack hat;
 
     public AmongUsPlayer(UUID uuid, Color color) {
@@ -46,6 +47,7 @@ public class AmongUsPlayer {
         this.impostor = true;
         this.tasks = new ArrayList<>(Arrays.asList(new SimonTask(this), new TemperatureTask(this)));
         this.currentVentGroup = new ArrayList<>();
+        this.currentVent = null;
         this.hat = null;
         this.refreshAll();
     }
@@ -174,6 +176,13 @@ public class AmongUsPlayer {
         }
     }
 
+    public void removeBar() {
+        PlayerInventory inventory = ((Player) this.toBukkitPlayer()).getInventory();
+        for (int i = 0; i < 9; i++) {
+            inventory.setItem(i, null);
+        }
+    }
+
     public void refreshInventory() {
         PlayerInventory inventory = ((Player) this.toBukkitPlayer()).getInventory();
 
@@ -196,6 +205,9 @@ public class AmongUsPlayer {
 
                 inventory.setItem(18, previousVentItem);
                 inventory.setItem(20, nextVentItem);
+            } else {
+                inventory.setItem(18, null);
+                inventory.setItem(20, null);
             }
             inventory.setItem(13, separatorItem);
             inventory.setItem(22, separatorItem);
@@ -237,6 +249,14 @@ public class AmongUsPlayer {
         this.currentVentGroup = currentVentGroup;
     }
 
+    public Location getCurrentVent() {
+        return currentVent;
+    }
+
+    public void setCurrentVent(Location currentVent) {
+        this.currentVent = currentVent;
+    }
+
     public boolean isInVent() {
         return !currentVentGroup.isEmpty();
     }
@@ -265,22 +285,24 @@ public class AmongUsPlayer {
                 Location ventLocation = vent.getLocation();
                 if (auPlayer.isInVent()) {
                     auPlayer.setCurrentVentGroup(new ArrayList<>());
+                    auPlayer.setCurrentVent(null);
                     auPlayer.refreshEquipment();
+                    auPlayer.refreshBar();
                     player.setInvisible(false);
                     player.setWalkSpeed(0.2F);
                     player.setFoodLevel(20);
-                    player.setCollidable(true);
                     player.removePotionEffect(PotionEffectType.JUMP);
-                    player.teleport(ventLocation.add(new Vector(0.0, 0.5, 0.0)));
+                    player.teleport(ventLocation.clone().add(new Vector(0.5, 0.1, 0.5)));
                 } else {
                     auPlayer.setCurrentVentGroup(Game.getInstance().getVentgroup(ventLocation));
+                    auPlayer.setCurrentVent(ventLocation);
                     auPlayer.removeEquipment();
+                    auPlayer.removeBar();
                     player.setInvisible(true);
                     player.setWalkSpeed(0.0F);
                     player.setFoodLevel(6);
-                    player.setCollidable(false);
                     player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 999999, 200, false, false));
-                    player.teleport(ventLocation.add(new Vector(0.0, 0.5, 0.0)));
+                    player.teleport(ventLocation.clone().add(new Vector(0.5, 0.1, 0.5)));
                 }
                 auPlayer.refreshInventory();
                 if (vent.getBlockData() instanceof Openable) {
@@ -298,12 +320,38 @@ public class AmongUsPlayer {
         }
 
         @EventHandler
-        public void onOpenInventory(InventoryClickEvent e) {
-            if (e.getView().getTitle().equals("Crafting")) {
-                Bukkit.broadcastMessage("" + e.getSlot());
+        public void onClick(InventoryClickEvent e) {
+            if (e.getView().getTitle().equals("Crafting") && e.getWhoClicked().getGameMode().equals(GameMode.ADVENTURE)) {
                 e.setCancelled(true);
                 if (e.getAction().equals(InventoryAction.PICKUP_ALL)) {
-
+                    Player player = (Player) e.getWhoClicked();
+                    AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
+                    ItemStack currentItem = e.getCurrentItem();
+                    if (currentItem != null) {
+                        ItemMeta currentItemMeta = currentItem.getItemMeta();
+                        List<Location> ventGroup = auPlayer.getCurrentVentGroup();
+                        Location currentVent = auPlayer.getCurrentVent();
+                        if (currentItemMeta.getDisplayName().equals("Previous vent")) {
+                            Location newVent = null;
+                            if (ventGroup.indexOf(currentVent) == 0) {
+                                newVent = ventGroup.get(ventGroup.size() - 1);
+                            } else {
+                                newVent = ventGroup.get(ventGroup.indexOf(currentVent) - 1);
+                            }
+                            player.teleport(newVent.clone().add(new Vector(0.5, 0.1, 0.5)));
+                            auPlayer.setCurrentVent(newVent);
+                        } else if (currentItemMeta.getDisplayName().equals("Next vent")) {
+                            Location newVent = null;
+                            if (ventGroup.indexOf(currentVent) == ventGroup.size() - 1) {
+                                newVent = ventGroup.get(0);
+                            } else {
+                                newVent = ventGroup.get(ventGroup.indexOf(currentVent) + 1);
+                            }
+                            player.teleport(newVent.clone().add(new Vector(0.5, 0.1, 0.5)));
+                            auPlayer.setCurrentVent(newVent);
+                        }
+                        player.closeInventory();
+                    }
                 }
             }
         }
