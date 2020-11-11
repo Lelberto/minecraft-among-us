@@ -2,10 +2,12 @@ package com.minecraft_among_us.plugin.tasks;
 
 import com.minecraft_among_us.plugin.AmongUsPlayer;
 import com.minecraft_among_us.plugin.Plugin;
+import com.minecraft_among_us.plugin.event.TaskFinishEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 
 public abstract class Task {
 
@@ -35,10 +37,7 @@ public abstract class Task {
 
     public void finish() {
         this.finished = true;
-        Player player = (Player) auPlayer.toBukkitPlayer();
-        player.sendTitle("§aTask completed", null, 5, 30, 5);
-        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE, SoundCategory.AMBIENT, 1.0F, 0.6F);
-        Bukkit.getScheduler().runTaskLater(Plugin.getPlugin(), () -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE, SoundCategory.AMBIENT, 1.0F, 0.8F), 3L);
+        Bukkit.getPluginManager().callEvent(new TaskFinishEvent(this, this.auPlayer));
     }
 
     public TaskType getType() {
@@ -47,5 +46,18 @@ public abstract class Task {
 
     public boolean isFinished() {
         return finished;
+    }
+
+    public static class Listener implements org.bukkit.event.Listener {
+
+        @EventHandler
+        public void onTaskFinish(TaskFinishEvent e) {
+            Task task = e.getTask();
+            AmongUsPlayer auPlayer = e.getAmongUsPlayer();
+            Player player = (Player) auPlayer.toBukkitPlayer();
+            player.sendTitle("§aTask completed", null, 5, 30, 5);
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE, SoundCategory.AMBIENT, 1.0F, 0.6F);
+            Bukkit.getScheduler().runTaskLater(Plugin.getPlugin(), () -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE, SoundCategory.AMBIENT, 1.0F, 0.8F), 3L);
+        }
     }
 }

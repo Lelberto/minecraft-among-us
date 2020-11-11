@@ -7,6 +7,7 @@ import com.minecraft_among_us.plugin.inventories.ComputerInventory;
 import com.minecraft_among_us.plugin.inventories.GameSettingsInventory;
 import com.minecraft_among_us.plugin.inventories.HatInventory;
 import com.minecraft_among_us.plugin.tasks.SimonTask;
+import com.minecraft_among_us.plugin.tasks.Task;
 import com.minecraft_among_us.plugin.tasks.TemperatureColdTask;
 import com.minecraft_among_us.plugin.tasks.TemperatureHotTask;
 import org.bukkit.Bukkit;
@@ -49,6 +50,7 @@ public class Plugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new HatInventory.Listener(), this);
         Bukkit.getPluginManager().registerEvents(new GameSettingsInventory.Listener(), this);
         Bukkit.getPluginManager().registerEvents(new ColorInventory.Listener(), this);
+        Bukkit.getPluginManager().registerEvents(new Task.Listener(), this);
         Bukkit.getPluginManager().registerEvents(new SimonTask.Listener(), this);
         Bukkit.getPluginManager().registerEvents(new TemperatureHotTask.Listener(), this);
         Bukkit.getPluginManager().registerEvents(new TemperatureColdTask.Listener(), this);
