@@ -67,7 +67,7 @@ public class ComputerInventory extends BaseInventory {
 
         @EventHandler
         public void onClick(InventoryClickEvent e) {
-            if (e.getView().getTitle().equals("Computer") && Game.getInstance().getState().equals(GameState.HUB)) {
+            if (e.getView().getTitle().equals("Computer")) {
                 e.setCancelled(true);
                 if (e.getAction().equals(InventoryAction.PICKUP_ALL)) {
                     Player player = (Player) e.getWhoClicked();
