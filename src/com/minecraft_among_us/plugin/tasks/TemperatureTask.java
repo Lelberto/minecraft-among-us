@@ -15,8 +15,8 @@ public abstract class TemperatureTask extends Task {
     protected int currentTemperature;
     protected Inventory inventory;
 
-    public TemperatureTask(String name, String description, TaskType type, AmongUsPlayer auPlayer) {
-        super(name, description, type, auPlayer);
+    public TemperatureTask(int id, AmongUsPlayer auPlayer) {
+        super(id, auPlayer);
         int[] temperatures = this.generateTemperatures();
         this.expectedTemperature = temperatures[0];
         this.currentTemperature = temperatures[1];
@@ -37,7 +37,7 @@ public abstract class TemperatureTask extends Task {
     }
 
     private Inventory createInventory() {
-        Inventory inventory = Bukkit.createInventory(null, InventoryType.WORKBENCH, this.name);
+        Inventory inventory = Bukkit.createInventory(null, InventoryType.WORKBENCH, this.settings.name);
 
         ItemStack plusItem = new ItemStack(Material.GREEN_CONCRETE);
         ItemMeta plusItemMeta = plusItem.getItemMeta();

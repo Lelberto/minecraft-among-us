@@ -1,9 +1,7 @@
 package com.minecraft_among_us.plugin;
 
 import com.minecraft_among_us.plugin.game.Game;
-import com.minecraft_among_us.plugin.tasks.SimonTask;
 import com.minecraft_among_us.plugin.tasks.Task;
-import com.minecraft_among_us.plugin.tasks.TemperatureColdTask;
 import com.minecraft_among_us.plugin.tasks.TemperatureHotTask;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -45,7 +43,7 @@ public class AmongUsPlayer {
         this.uuid = uuid;
         this.color = color;
         this.impostor = false;
-        this.tasks = new ArrayList<>(Arrays.asList(new SimonTask(this), new TemperatureHotTask(this), new TemperatureColdTask(this)));
+        this.tasks = new ArrayList<>();
         this.currentVentGroup = new ArrayList<>();
         this.currentVent = null;
         this.hat = null;
@@ -237,8 +235,12 @@ public class AmongUsPlayer {
         return tasks;
     }
 
+    public Task getTask(int taskId) {
+        return this.tasks.stream().filter(task -> task.getId() == taskId).findFirst().orElse(null);
+    }
+
     public Task getTask(String taskName) {
-        return this.tasks.stream().filter(task -> task.getName().equals(taskName)).findFirst().orElse(null);
+        return this.tasks.stream().filter(task -> task.getSettings().name.equals(taskName)).findFirst().orElse(null);
     }
 
     public List<Location> getCurrentVentGroup() {

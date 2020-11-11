@@ -56,7 +56,8 @@ computer:
         y: 100
         z: 0
   tasks:
-    temperatureHot:
+    0:
+      enabled: true
       name: "Lava temperature log"
       description: "Set the temperature log"
       type: "short"
@@ -64,7 +65,8 @@ computer:
         x: 0
         y: 100
         z: 0
-    temperatureCold:
+    1:
+      enabled: true
       name: "Laboratory temperature log"
       description: "Set the temperature log"
       type: "short"
@@ -72,7 +74,8 @@ computer:
         x: 0
         y: 100
         z: 0
-    simon:
+    2:
+      enabled: true
       name: "Simon"
       description: "Memorize and repeat the Simon"
       type: "long"

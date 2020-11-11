@@ -2,10 +2,9 @@ package com.minecraft_among_us.plugin.tasks;
 
 import com.minecraft_among_us.plugin.AmongUsPlayer;
 import com.minecraft_among_us.plugin.Plugin;
-import com.minecraft_among_us.plugin.config.ConfigurationManager;
-import com.mysql.fabric.xmlrpc.base.Array;
+import com.minecraft_among_us.plugin.config.TaskSettings;
+import com.minecraft_among_us.plugin.game.Game;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,6 +24,7 @@ import java.util.Random;
 
 public class SimonTask extends Task {
 
+    public static final int ID = 2;
     private final ArrayList<Integer> slots = new ArrayList<Integer>(Arrays.asList(0,1,2,9,10,11,18,19,20));
 
     private Inventory inventory;
@@ -36,12 +36,7 @@ public class SimonTask extends Task {
     private final int nbRounds = 5;
 
     public SimonTask(AmongUsPlayer auPlayer) {
-        super(
-                ConfigurationManager.getInstance().simonTaskSettings.name,
-                ConfigurationManager.getInstance().simonTaskSettings.description,
-                ConfigurationManager.getInstance().simonTaskSettings.type,
-                auPlayer
-        );
+        super(ID, auPlayer);
         this.inventory = this.createInventory();
         this.path = createPath();
         this.showingSteps = false;
@@ -60,7 +55,7 @@ public class SimonTask extends Task {
     }
 
     private Inventory createInventory() {
-        Inventory inventory = Bukkit.createInventory(null, InventoryType.CHEST, this.name);
+        Inventory inventory = Bukkit.createInventory(null, InventoryType.CHEST, this.settings.name);
 
         for (int slot: slots) {
             this.setUntouchedItem(inventory, slot);
@@ -173,13 +168,14 @@ public class SimonTask extends Task {
 
         @EventHandler
         public void onClick(InventoryClickEvent e) {
-            if (e.getView().getTitle().equals(ConfigurationManager.getInstance().simonTaskSettings.name)) {
+            TaskSettings settings = Game.getInstance().getTaskSettings(ID);
+            if (e.getView().getTitle().equals(settings.name)) {
                 e.setCancelled(true);
                 Player player = (Player) e.getWhoClicked();
                 AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
                 ItemStack currentItem = e.getCurrentItem();
                 if (currentItem != null) {
-                    SimonTask task = (SimonTask) auPlayer.getTask(ConfigurationManager.getInstance().simonTaskSettings.name);
+                    SimonTask task = (SimonTask) auPlayer.getTask(settings.name);
                     task.playerPlay(e.getClickedInventory(), e.getSlot());
                 }
             }
