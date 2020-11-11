@@ -37,18 +37,6 @@ public class TemperatureColdTask extends TemperatureTask {
     public static class Listener implements org.bukkit.event.Listener {
 
         @EventHandler
-        public void onTaskLaunch(PlayerInteractEvent e) {
-            if (e.getHand().equals(EquipmentSlot.HAND) && e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getClickedBlock().getLocation().equals(ConfigurationManager.getInstance().temperatureColdTaskSettings.location)) {
-                Player player = e.getPlayer();
-                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
-                Task task = auPlayer.getTask(ConfigurationManager.getInstance().temperatureColdTaskSettings.name);
-                if (task != null && !task.isFinished()) {
-                    task.execute();
-                }
-            }
-        }
-
-        @EventHandler
         public void onClick(InventoryClickEvent e) {
             if (e.getView().getTitle().equals(ConfigurationManager.getInstance().temperatureColdTaskSettings.name)) {
                 e.setCancelled(true);
