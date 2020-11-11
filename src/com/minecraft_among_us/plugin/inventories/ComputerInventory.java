@@ -1,6 +1,8 @@
 package com.minecraft_among_us.plugin.inventories;
 
 import com.minecraft_among_us.plugin.AmongUsPlayer;
+import com.minecraft_among_us.plugin.game.Game;
+import com.minecraft_among_us.plugin.game.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,6 +14,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
+
 public class ComputerInventory extends BaseInventory {
 
     public ComputerInventory(AmongUsPlayer auPlayer) {
@@ -19,6 +23,7 @@ public class ComputerInventory extends BaseInventory {
     }
 
     public Inventory create() {
+        int playerCount = Game.getInstance().getPlayers().size();
         Inventory inventory = Bukkit.createInventory(null, InventoryType.HOPPER, "Computer");
 
         ItemStack colorItem = new ItemStack(Material.RED_WOOL);
@@ -36,9 +41,25 @@ public class ComputerInventory extends BaseInventory {
         settingsItemMeta.setDisplayName("Game settings");
         settingsItem.setItemMeta(settingsItemMeta);
 
+        ItemStack startItem = new ItemStack((playerCount >= Game.MIN_PLAYERS) ? Material.DIAMOND : Material.BARRIER);
+        ItemMeta startItemMeta = startItem.getItemMeta();
+        startItemMeta.setDisplayName("§aStart ➤");
+        String startItemMetaLore = "§fPlayers : ";
+        if (playerCount < Game.MIN_PLAYERS) {
+            startItemMetaLore += "§c";
+        } else if (playerCount == Game.MIN_PLAYERS) {
+            startItemMetaLore += "§e";
+        } else {
+            startItemMetaLore += "§a";
+        }
+        startItemMetaLore += playerCount;
+        startItemMeta.setLore(Arrays.asList(startItemMetaLore));
+        startItem.setItemMeta(startItemMeta);
+
         inventory.setItem(0, colorItem);
         inventory.setItem(1, hatItem);
-        inventory.setItem(2, settingsItem);;
+        inventory.setItem(2, settingsItem);
+        inventory.setItem(4, startItem);
         return inventory;
     }
 
@@ -46,7 +67,7 @@ public class ComputerInventory extends BaseInventory {
 
         @EventHandler
         public void onClick(InventoryClickEvent e) {
-            if (e.getView().getTitle().equals("Computer")) {
+            if (e.getView().getTitle().equals("Computer") && Game.getInstance().getState().equals(GameState.HUB)) {
                 e.setCancelled(true);
                 if (e.getAction().equals(InventoryAction.PICKUP_ALL)) {
                     Player player = (Player) e.getWhoClicked();
@@ -60,6 +81,9 @@ public class ComputerInventory extends BaseInventory {
                             player.openInventory(new GameSettingsInventory(auPlayer).create());
                         } else if (currentMaterial.equals(Material.RED_WOOL)) {
                             player.openInventory(new ColorInventory(auPlayer).create());
+                        } else if (currentMaterial.equals(Material.DIAMOND)) {
+                            player.closeInventory();
+                            Game.getInstance().start();
                         }
                     }
                 }
