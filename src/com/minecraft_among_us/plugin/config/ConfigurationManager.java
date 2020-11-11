@@ -111,8 +111,5 @@ public class ConfigurationManager {
                     TaskType.valueOf(taskSettingsSection.getString("type").toUpperCase()),
                     taskSettingsSection.getLocation("location")));
         });
-        for (TaskSettings s : this.taskSettings) {
-            Bukkit.broadcastMessage(s.name);
-        }
     }
 }
