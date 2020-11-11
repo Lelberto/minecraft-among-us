@@ -1,6 +1,11 @@
 package com.minecraft_among_us.plugin.tasks;
 
 import com.minecraft_among_us.plugin.AmongUsPlayer;
+import com.minecraft_among_us.plugin.Plugin;
+import org.bukkit.Bukkit;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.entity.Player;
 
 public abstract class Task {
 
@@ -30,6 +35,10 @@ public abstract class Task {
 
     public void finish() {
         this.finished = true;
+        Player player = (Player) auPlayer.toBukkitPlayer();
+        player.sendTitle("§aTask completed", null, 5, 30, 5);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE, SoundCategory.AMBIENT, 1.0F, 0.6F);
+        Bukkit.getScheduler().runTaskLater(Plugin.getPlugin(), () -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE, SoundCategory.AMBIENT, 1.0F, 0.8F), 3L);
     }
 
     public TaskType getType() {

@@ -2,6 +2,7 @@ package com.minecraft_among_us.plugin.tasks;
 
 import com.minecraft_among_us.plugin.AmongUsPlayer;
 import com.minecraft_among_us.plugin.Plugin;
+import com.minecraft_among_us.plugin.config.ConfigurationManager;
 import com.mysql.fabric.xmlrpc.base.Array;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -24,7 +25,6 @@ import java.util.Random;
 
 public class SimonTask extends Task {
 
-    private final static String TASK_NAME = "Simon";
     private final ArrayList<Integer> slots = new ArrayList<Integer>(Arrays.asList(0,1,2,9,10,11,18,19,20));
 
     private Inventory inventory;
@@ -36,7 +36,12 @@ public class SimonTask extends Task {
     private final int nbRounds = 5;
 
     public SimonTask(AmongUsPlayer auPlayer) {
-        super(TASK_NAME, "Memorize and repeat the Simon", TaskType.LONG, auPlayer);
+        super(
+                ConfigurationManager.getInstance().simonTaskSettings.name,
+                ConfigurationManager.getInstance().simonTaskSettings.description,
+                ConfigurationManager.getInstance().simonTaskSettings.type,
+                auPlayer
+        );
         this.inventory = this.createInventory();
         this.path = createPath();
         this.showingSteps = false;
@@ -111,7 +116,6 @@ public class SimonTask extends Task {
     public void finish() {
         super.finish();
         ((Player) this.auPlayer.toBukkitPlayer()).closeInventory();
-        Bukkit.broadcastMessage("J'ai kill le truc bb");
     }
 
     public void playerPlay(Inventory inventory, int slot) {
@@ -171,10 +175,10 @@ public class SimonTask extends Task {
         public void onTaskLaunch(PlayerInteractEvent e) {
             if (e.getHand().equals(EquipmentSlot.HAND)
                     && e.getAction().equals(Action.RIGHT_CLICK_BLOCK)
-                    && e.getClickedBlock().getLocation().equals(new Location(Plugin.getDefaultWorld(), -314, 31, -161))) {
+                    && e.getClickedBlock().getLocation().equals(ConfigurationManager.getInstance().simonTaskSettings.location)) {
                 Player player = e.getPlayer();
                 AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
-                Task task = auPlayer.getTask(TASK_NAME);
+                Task task = auPlayer.getTask(ConfigurationManager.getInstance().simonTaskSettings.name);
                 if (task != null && !task.finished) {
                     task.execute();
                 }
@@ -183,13 +187,13 @@ public class SimonTask extends Task {
 
         @EventHandler
         public void onClick(InventoryClickEvent e) {
-            if (e.getView().getTitle().equals(TASK_NAME)) {
+            if (e.getView().getTitle().equals(ConfigurationManager.getInstance().simonTaskSettings.name)) {
                 e.setCancelled(true);
                 Player player = (Player) e.getWhoClicked();
                 AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
                 ItemStack currentItem = e.getCurrentItem();
                 if (currentItem != null) {
-                    SimonTask task = (SimonTask) auPlayer.getTask(TASK_NAME);
+                    SimonTask task = (SimonTask) auPlayer.getTask(ConfigurationManager.getInstance().simonTaskSettings.name);
                     task.playerPlay(e.getClickedInventory(), e.getSlot());
                 }
             }

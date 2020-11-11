@@ -23,3 +23,28 @@ computer:
       - x: 0
         y: 100
         z: 0
+  tasks:
+    temperatureHot:
+      name: "Lava temperature log"
+      description: "Set the temperature log"
+      type: "short"
+      location:
+        x: 0
+        y: 100
+        z: 0
+    temperatureCold:
+      name: "Laboratory temperature log"
+      description: "Set the temperature log"
+      type: "short"
+      location:
+        x: 0
+        y: 100
+        z: 0
+    simon:
+      name: "Simon"
+      description: "Memorize and repeat the Simon"
+      type: "long"
+      location:
+        x: 0
+        y: 100
+        z: 0

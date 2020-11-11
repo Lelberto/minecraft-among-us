@@ -6,7 +6,8 @@ import com.minecraft_among_us.plugin.inventories.ComputerInventory;
 import com.minecraft_among_us.plugin.inventories.GameSettingsInventory;
 import com.minecraft_among_us.plugin.inventories.HatInventory;
 import com.minecraft_among_us.plugin.tasks.SimonTask;
-import com.minecraft_among_us.plugin.tasks.TemperatureTask;
+import com.minecraft_among_us.plugin.tasks.TemperatureColdTask;
+import com.minecraft_among_us.plugin.tasks.TemperatureHotTask;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -45,7 +46,8 @@ public class Plugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new GameSettingsInventory.Listener(), this);
         Bukkit.getPluginManager().registerEvents(new ColorInventory.Listener(), this);
         Bukkit.getPluginManager().registerEvents(new SimonTask.Listener(), this);
-        Bukkit.getPluginManager().registerEvents(new TemperatureTask.Listener(), this);
+        Bukkit.getPluginManager().registerEvents(new TemperatureHotTask.Listener(), this);
+        Bukkit.getPluginManager().registerEvents(new TemperatureColdTask.Listener(), this);
 
         // TODO Used for debug only, remove it in production
         // Add online players in game to avoid reconnect
