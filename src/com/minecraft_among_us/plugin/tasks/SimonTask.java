@@ -172,20 +172,6 @@ public class SimonTask extends Task {
     public static class Listener implements org.bukkit.event.Listener {
 
         @EventHandler
-        public void onTaskLaunch(PlayerInteractEvent e) {
-            if (e.getHand().equals(EquipmentSlot.HAND)
-                    && e.getAction().equals(Action.RIGHT_CLICK_BLOCK)
-                    && e.getClickedBlock().getLocation().equals(ConfigurationManager.getInstance().simonTaskSettings.location)) {
-                Player player = e.getPlayer();
-                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
-                Task task = auPlayer.getTask(ConfigurationManager.getInstance().simonTaskSettings.name);
-                if (task != null && !task.finished) {
-                    task.execute();
-                }
-            }
-        }
-
-        @EventHandler
         public void onClick(InventoryClickEvent e) {
             if (e.getView().getTitle().equals(ConfigurationManager.getInstance().simonTaskSettings.name)) {
                 e.setCancelled(true);
