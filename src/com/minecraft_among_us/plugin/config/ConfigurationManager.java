@@ -26,6 +26,7 @@ public class ConfigurationManager {
 
     private final File configFile;
     public Location hubSpawn;
+    public List<Location> mapSpawns;
     public Location computerLocation;
     public List<List<Location>> vents;
     public TaskSettings temperatureHotTaskSettings;
@@ -35,6 +36,18 @@ public class ConfigurationManager {
     private ConfigurationManager(File configFile) {
         this.configFile = configFile;
         this.hubSpawn = new Location(Plugin.getDefaultWorld(), 0, 100, 0);
+        this.mapSpawns = Arrays.asList(
+                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0)
+        );
         this.computerLocation = new Location(Plugin.getDefaultWorld(), 0, 100, 0);
         this.vents = Arrays.asList(
                 Arrays.asList(
@@ -56,6 +69,8 @@ public class ConfigurationManager {
                 YamlConfiguration config = new YamlConfiguration();
                 ConfigurationSection hubSection = config.createSection("hub");
                 hubSection.set("spawn", this.hubSpawn);
+                ConfigurationSection mapSection = config.createSection("map");
+                mapSection.set("spawns", this.mapSpawns);
                 ConfigurationSection computerSection = config.createSection("computer");
                 computerSection.set("location", this.computerLocation);
                 config.set("vents", this.vents);
@@ -86,6 +101,8 @@ public class ConfigurationManager {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
         ConfigurationSection hubSection = config.getConfigurationSection("hub");
         this.hubSpawn = hubSection.getLocation("spawn");
+        ConfigurationSection mapSection = config.getConfigurationSection("map");
+        this.mapSpawns = (List<Location>) mapSection.getList("spawns");
         ConfigurationSection computerSection = config.getConfigurationSection("computer");
         this.computerLocation = computerSection.getLocation("location");
         this.vents = (List<List<Location>>) config.get("vents");
