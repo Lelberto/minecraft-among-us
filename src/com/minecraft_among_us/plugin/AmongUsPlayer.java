@@ -44,7 +44,7 @@ public class AmongUsPlayer {
     public AmongUsPlayer(UUID uuid, Color color) {
         this.uuid = uuid;
         this.color = color;
-        this.impostor = true;
+        this.impostor = false;
         this.tasks = new ArrayList<>(Arrays.asList(new SimonTask(this), new TemperatureHotTask(this), new TemperatureColdTask(this)));
         this.currentVentGroup = new ArrayList<>();
         this.currentVent = null;
@@ -300,7 +300,7 @@ public class AmongUsPlayer {
                     player.setInvisible(true);
                     player.setWalkSpeed(0.0F);
                     player.setFoodLevel(6);
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 999999, 200, false, false));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 999999, 200, false, false, false));
                     player.teleport(ventLocation.clone().add(new Vector(0.5, 0.1, 0.5)));
                 }
                 auPlayer.refreshInventory();
