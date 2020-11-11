@@ -1,5 +1,6 @@
 package com.minecraft_among_us.plugin;
 
+import com.minecraft_among_us.plugin.commands.TestCommand;
 import com.minecraft_among_us.plugin.game.Game;
 import com.minecraft_among_us.plugin.inventories.ColorInventory;
 import com.minecraft_among_us.plugin.inventories.ComputerInventory;
@@ -27,7 +28,7 @@ public class Plugin extends JavaPlugin {
     }
 
     public static String getPluginNameChat() {
-        return "§7[§aMinecraft§cAmongUs§7] §r";
+        return "§7[§9" + Plugin.getPluginName() + "§7] §r";
     }
 
     public static World getDefaultWorld() {
@@ -37,6 +38,9 @@ public class Plugin extends JavaPlugin {
     @Override
     public void onEnable() {
         super.onEnable();
+
+        // Commands registration
+        this.getCommand("test").setExecutor(new TestCommand());
 
         // Listeners registration
         Bukkit.getPluginManager().registerEvents(new Game.Listener(), this);
