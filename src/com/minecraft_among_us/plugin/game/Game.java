@@ -29,10 +29,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Game {
@@ -136,13 +133,13 @@ public class Game {
     }
 
     public void stop() {
-
+        Bukkit.broadcastMessage("game ends");
     }
 
     public void createDead(AmongUsPlayer auPlayer) {
         Player player = (Player) auPlayer.toBukkitPlayer();
         ArmorStand as = (ArmorStand) player.getWorld().spawnEntity(player.getLocation().subtract(new Vector(0.0, 1.4, 0.0)), EntityType.ARMOR_STAND);
-        as.setMetadata("target", new FixedMetadataValue(Plugin.getPlugin(), player.getUniqueId()));
+        as.setMetadata("target", new FixedMetadataValue(Plugin.getPlugin(), player.getUniqueId().toString()));
         as.setGravity(false);
         as.setArms(true);
         as.setBasePlate(false);
@@ -258,6 +255,7 @@ public class Game {
         @EventHandler
         public void onImpostorKill(EntityDamageByEntityEvent e) {
             if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
+                e.setCancelled(true);
                 Game game = Game.getInstance();
                 Player impostor = (Player) e.getDamager();
                 Player crewmate = (Player) e.getEntity();
@@ -265,17 +263,31 @@ public class Game {
                 AmongUsPlayer auCrewmate = AmongUsPlayer.getPlayer(crewmate.getUniqueId());
                 if (auImpostor.isImpostor() && auCrewmate.isCrewmate()) {
                     e.setCancelled(true);
+                    crewmate.setGameMode(GameMode.SPECTATOR);
                     auCrewmate.setAlive(false);
                     game.createDead(auCrewmate);
                     if (game.getCrewmates().size() == game.getImpostors().size()) {
-                        // TODO Win impostors
+                        game.stop();
                     }
                 }
             }
         }
 
         @EventHandler
-        public void onSprint(FoodLevelChangeEvent e) {
+        public void onDiscoverDeadBody(PlayerInteractAtEntityEvent e) {
+            e.setCancelled(true);
+            if (e.getHand().equals(EquipmentSlot.HAND) && e.getRightClicked().hasMetadata("target")) {
+                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(e.getPlayer().getUniqueId());
+                AmongUsPlayer auTarget = AmongUsPlayer.getPlayer(UUID.fromString(e.getRightClicked().getMetadata("target").get(0).asString()));
+                if (auPlayer.isAlive()) {
+                    e.getRightClicked().remove();
+                    Bukkit.broadcastMessage(auTarget.toBukkitPlayer().getName() + " finded by " + auPlayer.toBukkitPlayer().getName());
+                }
+            }
+        }
+
+        @EventHandler
+        public void onFoodLevelChange(FoodLevelChangeEvent e) {
             e.setCancelled(true);
         }
 
