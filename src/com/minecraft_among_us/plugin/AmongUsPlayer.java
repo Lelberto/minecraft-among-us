@@ -64,7 +64,6 @@ public class AmongUsPlayer {
 
     public void refreshAll() {
         this.refreshEquipment();
-        this.refreshInventory();
         this.refreshBar();
     }
 
@@ -181,40 +180,6 @@ public class AmongUsPlayer {
         }
     }
 
-    public void refreshInventory() {
-        PlayerInventory inventory = ((Player) this.toBukkitPlayer()).getInventory();
-
-        ItemStack separatorItem = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
-        ItemMeta separatorItemMeta = separatorItem.getItemMeta();
-        separatorItemMeta.setDisplayName("-");
-        separatorItem.setItemMeta(separatorItemMeta);
-
-        if (this.impostor) {
-            if (this.isInVent()) {
-                ItemStack previousVentItem = new ItemStack(Material.GRAY_CONCRETE);
-                ItemMeta previousVentItemMeta = previousVentItem.getItemMeta();
-                previousVentItemMeta.setDisplayName("Previous vent");
-                previousVentItem.setItemMeta(previousVentItemMeta);
-
-                ItemStack nextVentItem = new ItemStack(Material.GRAY_CONCRETE);
-                ItemMeta nextVentItemMeta = nextVentItem.getItemMeta();
-                nextVentItemMeta.setDisplayName("Next vent");
-                nextVentItem.setItemMeta(nextVentItemMeta);
-
-                inventory.setItem(18, previousVentItem);
-                inventory.setItem(20, nextVentItem);
-            } else {
-                inventory.setItem(18, null);
-                inventory.setItem(20, null);
-            }
-            inventory.setItem(13, separatorItem);
-            inventory.setItem(22, separatorItem);
-            inventory.setItem(31, separatorItem);
-        } else {
-
-        }
-    }
-
     public boolean isCrewmate() {
         return !this.impostor;
     }
@@ -289,7 +254,7 @@ public class AmongUsPlayer {
         public void onVent(PlayerInteractEvent e) {
             Player player = e.getPlayer();
             AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
-            if (auPlayer.isImpostor() && e.getHand().equals(EquipmentSlot.HAND) && e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && Game.getInstance().getVentgroup(e.getClickedBlock().getLocation()) != null) {
+            if (auPlayer.isImpostor() && auPlayer.isAlive() && e.getHand().equals(EquipmentSlot.HAND) && e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && Game.getInstance().getVentgroup(e.getClickedBlock().getLocation()) != null) {
                 e.setCancelled(true);
                 Block vent = e.getClickedBlock();
                 Location ventLocation = vent.getLocation();
@@ -313,7 +278,6 @@ public class AmongUsPlayer {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 999999, 200, false, false, false));
                     player.teleport(ventLocation.clone().add(new Vector(0.5, 0.1, 0.5)));
                 }
-                auPlayer.refreshInventory();
                 if (vent.getBlockData() instanceof Openable) {
                     Openable data = (Openable) vent.getBlockData();
                     data.setOpen(true);
