@@ -9,6 +9,9 @@ import com.minecraft_among_us.plugin.inventories.ComputerInventory;
 import com.minecraft_among_us.plugin.tasks.Task;
 import com.minecraft_among_us.plugin.tasks.TaskType;
 import org.bukkit.*;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
@@ -40,12 +43,14 @@ public class Game {
     private GameSettings settings;
     private final List<AmongUsPlayer> players;
     private GameState state;
+    private final BossBar taskBar;
     private int startCooldown;
 
     private Game() {
         this.settings = new GameSettings();
         this.players = new ArrayList<>();
         this.state = GameState.HUB;
+        this.taskBar = Bukkit.createBossBar("Tasks completed", BarColor.GREEN, BarStyle.SEGMENTED_10);
         this.startCooldown = 5;
     }
 
@@ -59,6 +64,7 @@ public class Game {
                 } else {
                     this.selectRoles();
                     this.selectTasks();
+                    this.taskBar.setProgress(0.0);
                     Bukkit.getOnlinePlayers().forEach(player -> {
                         AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
                         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 120, 0, false, false, false));
@@ -67,6 +73,7 @@ public class Game {
                                 auPlayer.isCrewmate() ? "§bCrewmate" : "§4Impostor",
                                 auPlayer.isCrewmate() ? "§7Finish your tasks or find impostor(s)" : "§7Kill crewmates without showing you",
                                 20, 60, 20);
+                        this.taskBar.addPlayer(player);
                     });
                     Bukkit.getScheduler().runTaskLater(Plugin.getPlugin(), () -> {
                         List<Location> mapSpawns = ConfigurationManager.getInstance().mapSpawns;
@@ -136,6 +143,16 @@ public class Game {
         return state;
     }
 
+    public BossBar getTaskBar() {
+        return taskBar;
+    }
+
+    public List<Task> getAllTasks() {
+        List<Task> tasks = new ArrayList<>();
+        this.players.forEach(auPlayer -> tasks.addAll(auPlayer.getTasks()));
+        return tasks;
+    }
+
     public List<Color> getAvailableColors() {
         List<Color> availableColors = new ArrayList<>(Arrays.asList(Color.values()));
         players.stream().forEach(player -> availableColors.remove(player.getColor()));
@@ -189,6 +206,7 @@ public class Game {
             } else {
                 e.setJoinMessage(null);
                 player.setGameMode(GameMode.SPECTATOR);
+                game.taskBar.addPlayer(player);
             }
         }
 

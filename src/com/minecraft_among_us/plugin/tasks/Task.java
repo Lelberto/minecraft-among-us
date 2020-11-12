@@ -15,6 +15,9 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public abstract class Task {
 
     public static Task createTask(AmongUsPlayer auPlayer, int taskId, boolean fake) {
@@ -99,6 +102,11 @@ public abstract class Task {
             player.sendTitle("§aTask completed", null, 5, 30, 5);
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE, SoundCategory.AMBIENT, 1.0F, 0.6F);
             Bukkit.getScheduler().runTaskLater(Plugin.getPlugin(), () -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE, SoundCategory.AMBIENT, 1.0F, 0.8F), 3L);
+
+            Game game = Game.getInstance();
+            List<Task> allTasks = game.getAllTasks();
+            List<Task> finishedTasks = allTasks.stream().filter(Task::isFinished).collect(Collectors.toList());
+            game.getTaskBar().setProgress((double) finishedTasks.size() / (double) allTasks.size());
         }
     }
 }
