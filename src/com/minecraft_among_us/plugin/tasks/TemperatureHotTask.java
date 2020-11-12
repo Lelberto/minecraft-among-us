@@ -1,11 +1,11 @@
 package com.minecraft_among_us.plugin.tasks;
 
 import com.minecraft_among_us.plugin.AmongUsPlayer;
-import com.minecraft_among_us.plugin.config.ConfigurationManager;
+import com.minecraft_among_us.plugin.config.TaskSettings;
+import com.minecraft_among_us.plugin.game.Game;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -16,13 +16,10 @@ import java.util.Random;
 
 public class TemperatureHotTask extends TemperatureTask {
 
-    public TemperatureHotTask(AmongUsPlayer auPlayer) {
-        super(
-                ConfigurationManager.getInstance().temperatureHotTaskSettings.name,
-                ConfigurationManager.getInstance().temperatureHotTaskSettings.description,
-                ConfigurationManager.getInstance().temperatureHotTaskSettings.type,
-                auPlayer
-        );
+    public static final int ID = 0;
+
+    public TemperatureHotTask(AmongUsPlayer auPlayer, boolean fake) {
+        super(ID, auPlayer, fake);
     }
 
     @Override
@@ -49,14 +46,15 @@ public class TemperatureHotTask extends TemperatureTask {
 
         @EventHandler
         public void onClick(InventoryClickEvent e) {
-            if (e.getView().getTitle().equals(ConfigurationManager.getInstance().temperatureHotTaskSettings.name)) {
+            TaskSettings settings = Game.getInstance().getTaskSettings(ID);
+            if (e.getView().getTitle().equals(settings.name)) {
                 e.setCancelled(true);
                 if (e.getAction().equals(InventoryAction.PICKUP_ALL)) {
                     Player player = (Player) e.getWhoClicked();
                     AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
                     ItemStack currentItem = e.getCurrentItem();
                     if (currentItem != null) {
-                        TemperatureHotTask task = (TemperatureHotTask) auPlayer.getTask(ConfigurationManager.getInstance().temperatureHotTaskSettings.name);
+                        TemperatureHotTask task = (TemperatureHotTask) auPlayer.getTask(settings.name);
                         Material currentMaterial = currentItem.getType();
                         if (currentMaterial.equals(Material.GREEN_CONCRETE)) {
                             task.change(true);

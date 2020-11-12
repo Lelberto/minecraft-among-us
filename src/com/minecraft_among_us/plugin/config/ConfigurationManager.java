@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,9 +30,7 @@ public class ConfigurationManager {
     public List<Location> mapSpawns;
     public Location computerLocation;
     public List<List<Location>> vents;
-    public TaskSettings temperatureHotTaskSettings;
-    public TaskSettings temperatureColdTaskSettings;
-    public TaskSettings simonTaskSettings;
+    public List<TaskSettings> taskSettings;
 
     private ConfigurationManager(File configFile) {
         this.configFile = configFile;
@@ -59,9 +58,11 @@ public class ConfigurationManager {
                         new Location(Plugin.getDefaultWorld(), 0, 100, 20)
                 )
         );
-        this.temperatureHotTaskSettings = new TaskSettings("Lava temperature log", "Update the temperature log", TaskType.SHORT, new Location(Plugin.getDefaultWorld(), 0, 100, 0));
-        this.temperatureColdTaskSettings = new TaskSettings("Laboratory temperature log", "Update the temperature log", TaskType.SHORT, new Location(Plugin.getDefaultWorld(), 0, 100, 0));
-        this.simonTaskSettings = new TaskSettings("Simon", "Memorize and repeat the Simon", TaskType.LONG, new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0));
+        this.taskSettings = Arrays.asList(
+                new TaskSettings(0, true, "Lava temperature log", "Update the temperature log", TaskType.SHORT, new Location(Plugin.getDefaultWorld(), 0, 100, 0)),
+                new TaskSettings(1, true, "Laboratory temperature log", "Update the temperature log", TaskType.SHORT, new Location(Plugin.getDefaultWorld(), 0, 100, 0)),
+                new TaskSettings(2, true, "Simon", "Memorize and repeat the Simon", TaskType.LONG, new Location(Plugin.getDefaultWorld(), 0, 100, 0))
+        );
 
         // Configuration file creation
         try {
@@ -75,21 +76,13 @@ public class ConfigurationManager {
                 computerSection.set("location", this.computerLocation);
                 config.set("vents", this.vents);
                 ConfigurationSection tasksSection = config.createSection("tasks");
-                ConfigurationSection temperatureHotTaskSection = tasksSection.createSection("temperatureHot");
-                temperatureHotTaskSection.set("name", this.temperatureHotTaskSettings.name);
-                temperatureHotTaskSection.set("description", this.temperatureHotTaskSettings.description);
-                temperatureHotTaskSection.set("type", this.temperatureHotTaskSettings.type.name().toLowerCase());
-                temperatureHotTaskSection.set("location", this.temperatureHotTaskSettings.location);
-                ConfigurationSection temperatureColdTaskSection = tasksSection.createSection("temperatureCold");
-                temperatureColdTaskSection.set("name", this.temperatureColdTaskSettings.name);
-                temperatureColdTaskSection.set("description", this.temperatureColdTaskSettings.description);
-                temperatureColdTaskSection.set("type", this.temperatureColdTaskSettings.type.name().toLowerCase());
-                temperatureColdTaskSection.set("location", this.temperatureColdTaskSettings.location);
-                ConfigurationSection simonTaskSection = tasksSection.createSection("simon");
-                simonTaskSection.set("name", simonTaskSettings.name);
-                simonTaskSection.set("description", simonTaskSettings.description);
-                simonTaskSection.set("type", simonTaskSettings.type.name().toLowerCase());
-                simonTaskSection.set("location", simonTaskSettings.location);
+                this.taskSettings.forEach(taskSettings -> {
+                    ConfigurationSection taskSettingsSection = tasksSection.createSection("" + taskSettings.id);
+                    taskSettingsSection.set("name", taskSettings.name);
+                    taskSettingsSection.set("description", taskSettings.description);
+                    taskSettingsSection.set("type", taskSettings.type.name().toLowerCase());
+                    taskSettingsSection.set("location", taskSettings.location);
+                });
                 config.save(configFile);
             }
         } catch (IOException ex) {
@@ -107,25 +100,16 @@ public class ConfigurationManager {
         this.computerLocation = computerSection.getLocation("location");
         this.vents = (List<List<Location>>) config.get("vents");
         ConfigurationSection tasksSection = config.getConfigurationSection("tasks");
-        ConfigurationSection temperatureHotTaskSection = tasksSection.getConfigurationSection("temperatureHot");
-        this.temperatureHotTaskSettings = new TaskSettings(
-                temperatureHotTaskSection.getString("name"),
-                temperatureHotTaskSection.getString("description"),
-                TaskType.valueOf(temperatureHotTaskSection.getString("type").toUpperCase()),
-                temperatureHotTaskSection.getLocation("location"));
-        ConfigurationSection temperatureColdTaskSection = tasksSection.getConfigurationSection("temperatureCold");
-        this.temperatureColdTaskSettings = new TaskSettings(
-                temperatureColdTaskSection.getString("name"),
-                temperatureColdTaskSection.getString("description"),
-                TaskType.valueOf(temperatureColdTaskSection.getString("type").toUpperCase()),
-                temperatureColdTaskSection.getLocation("location"));
-        ConfigurationSection simonTaskSection = tasksSection.getConfigurationSection("simon");
-        this.simonTaskSettings = new TaskSettings(
-                simonTaskSection.getString("name"),
-                simonTaskSection.getString("description"),
-                TaskType.valueOf(simonTaskSection.getString("type").toUpperCase()),
-                simonTaskSection.getLocation("location")
-        );
-        Bukkit.broadcastMessage(ConfigurationManager.getInstance().simonTaskSettings.location.toString());
+        this.taskSettings = new ArrayList<>();
+        tasksSection.getKeys(false).forEach(taskId -> {
+            ConfigurationSection taskSettingsSection = tasksSection.getConfigurationSection(taskId);
+            this.taskSettings.add(new TaskSettings(
+                    Integer.parseInt(taskId),
+                    taskSettingsSection.getBoolean("enabled"),
+                    taskSettingsSection.getString("name"),
+                    taskSettingsSection.getString("description"),
+                    TaskType.valueOf(taskSettingsSection.getString("type").toUpperCase()),
+                    taskSettingsSection.getLocation("location")));
+        });
     }
 }
