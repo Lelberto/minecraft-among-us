@@ -104,7 +104,7 @@ public abstract class Task {
             Bukkit.getScheduler().runTaskLater(Plugin.getPlugin(), () -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE, SoundCategory.AMBIENT, 1.0F, 0.8F), 3L);
 
             Game game = Game.getInstance();
-            List<Task> allTasks = game.getAllTasks();
+            List<Task> allTasks = game.getAllTasks().stream().filter(currentTask -> !currentTask.isFake()).collect(Collectors.toList());
             List<Task> finishedTasks = allTasks.stream().filter(Task::isFinished).collect(Collectors.toList());
             game.getTaskBar().setProgress((double) finishedTasks.size() / (double) allTasks.size());
 
