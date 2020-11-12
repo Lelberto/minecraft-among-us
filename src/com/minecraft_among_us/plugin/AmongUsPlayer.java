@@ -2,7 +2,6 @@ package com.minecraft_among_us.plugin;
 
 import com.minecraft_among_us.plugin.game.Game;
 import com.minecraft_among_us.plugin.tasks.Task;
-import com.minecraft_among_us.plugin.tasks.TemperatureHotTask;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Openable;
@@ -21,7 +20,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,6 +32,7 @@ public class AmongUsPlayer {
     private final UUID uuid;
     private Color color;
     private boolean impostor;
+    private boolean alive;
     private List<Task> tasks;
     private List<Location> currentVentGroup;
     private Location currentVent;
@@ -43,6 +42,7 @@ public class AmongUsPlayer {
         this.uuid = uuid;
         this.color = color;
         this.impostor = false;
+        this.alive = true;
         this.tasks = new ArrayList<>();
         this.currentVentGroup = new ArrayList<>();
         this.currentVent = null;
@@ -229,6 +229,14 @@ public class AmongUsPlayer {
 
     public void setImpostor() {
         this.impostor = true;
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
     }
 
     public List<Task> getTasks() {
