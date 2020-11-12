@@ -12,14 +12,22 @@ import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.EulerAngle;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -131,12 +139,41 @@ public class Game {
 
     }
 
+    public void createDead(AmongUsPlayer auPlayer) {
+        Player player = (Player) auPlayer.toBukkitPlayer();
+        ArmorStand as = (ArmorStand) player.getWorld().spawnEntity(player.getLocation().subtract(new Vector(0.0, 1.4, 0.0)), EntityType.ARMOR_STAND);
+        as.setMetadata("target", new FixedMetadataValue(Plugin.getPlugin(), player.getUniqueId()));
+        as.setGravity(false);
+        as.setArms(true);
+        as.setBasePlate(false);
+        as.setBodyPose(new EulerAngle(275.0, 0.0, 0.0));
+        as.setHeadPose(new EulerAngle(275.0, 0.0, 0.7));
+        as.setLeftArmPose(new EulerAngle(275.0, 0.0, 0.0));
+        as.setRightArmPose(new EulerAngle(275.0, 0.0, 0.0));
+
+        ItemStack helmetItem = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta helmetItemMeta = (SkullMeta) helmetItem.getItemMeta();
+        helmetItemMeta.setOwningPlayer(player);
+        helmetItem.setItemMeta(helmetItemMeta);
+
+        as.getEquipment().setHelmet(helmetItem);
+        as.getEquipment().setChestplate(player.getEquipment().getChestplate());
+    }
+
     public GameSettings getSettings() {
         return settings;
     }
 
     public List<AmongUsPlayer> getPlayers() {
         return players;
+    }
+
+    public List<AmongUsPlayer> getCrewmates() {
+        return this.players.stream().filter(AmongUsPlayer::isCrewmate).collect(Collectors.toList());
+    }
+
+    public List<AmongUsPlayer> getImpostors() {
+        return this.players.stream().filter(AmongUsPlayer::isImpostor).collect(Collectors.toList());
     }
 
     public GameState getState() {
@@ -216,6 +253,25 @@ public class Game {
             Player player = e.getPlayer();
             game.players.remove(AmongUsPlayer.getPlayer(player.getUniqueId()));
             e.setQuitMessage("§7[§c-§7]§r §6" + player.getName());
+        }
+
+        @EventHandler
+        public void onImpostorKill(EntityDamageByEntityEvent e) {
+            if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
+                Game game = Game.getInstance();
+                Player impostor = (Player) e.getDamager();
+                Player crewmate = (Player) e.getEntity();
+                AmongUsPlayer auImpostor = AmongUsPlayer.getPlayer(impostor.getUniqueId());
+                AmongUsPlayer auCrewmate = AmongUsPlayer.getPlayer(crewmate.getUniqueId());
+                if (auImpostor.isImpostor() && auCrewmate.isCrewmate()) {
+                    e.setCancelled(true);
+                    auCrewmate.setAlive(false);
+                    game.createDead(auCrewmate);
+                    if (game.getCrewmates().size() == game.getImpostors().size()) {
+                        // TODO Win impostors
+                    }
+                }
+            }
         }
 
         @EventHandler
