@@ -279,10 +279,10 @@ public class AmongUsPlayer {
 
         @EventHandler
         public void onVent(PlayerInteractEvent e) {
-            if (e.getHand().equals(EquipmentSlot.HAND) && e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && Game.getInstance().getVentgroup(e.getClickedBlock().getLocation()) != null) {
+            Player player = e.getPlayer();
+            AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
+            if (auPlayer.isImpostor() && e.getHand().equals(EquipmentSlot.HAND) && e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && Game.getInstance().getVentgroup(e.getClickedBlock().getLocation()) != null) {
                 e.setCancelled(true);
-                Player player = e.getPlayer();
-                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
                 Block vent = e.getClickedBlock();
                 Location ventLocation = vent.getLocation();
                 if (auPlayer.isInVent()) {
