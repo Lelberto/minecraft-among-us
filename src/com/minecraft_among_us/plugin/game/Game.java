@@ -6,6 +6,8 @@ import com.minecraft_among_us.plugin.Plugin;
 import com.minecraft_among_us.plugin.config.ConfigurationManager;
 import com.minecraft_among_us.plugin.config.TaskSettings;
 import com.minecraft_among_us.plugin.inventories.ComputerInventory;
+import com.minecraft_among_us.plugin.tasks.Task;
+import com.minecraft_among_us.plugin.tasks.TaskType;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class Game {
 
@@ -55,6 +58,7 @@ public class Game {
                     this.startCooldown--;
                 } else {
                     this.selectRoles();
+                    this.selectTasks();
                     Bukkit.getOnlinePlayers().forEach(player -> {
                         AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
                         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 120, 0, false, false, false));
@@ -93,7 +97,27 @@ public class Game {
     }
 
     private void selectTasks() {
-
+        Random rand = new Random();
+        List<TaskSettings> tasks = ConfigurationManager.getInstance().taskSettings;
+        List<TaskSettings> commonTasks = tasks.stream().filter(task -> task.enabled && task.type.equals(TaskType.COMMON)).collect(Collectors.toList());
+        List<TaskSettings> shortTasks = tasks.stream().filter(task -> task.enabled && task.type.equals(TaskType.SHORT)).collect(Collectors.toList());
+        List<TaskSettings> longTasks = tasks.stream().filter(task -> task.enabled && task.type.equals(TaskType.LONG)).collect(Collectors.toList());
+        for (int i = 0; i < this.settings.commonTasks; i++) {
+            TaskSettings commonTask = commonTasks.remove(rand.nextInt(commonTasks.size()));
+            this.getPlayers().forEach(auPlayer -> auPlayer.getTasks().add(Task.createTask(auPlayer, commonTask.id, auPlayer.isImpostor())));
+        }
+        this.getPlayers().forEach(auPlayer -> {
+            List<TaskSettings> tasksClone = new ArrayList<>(shortTasks);
+            for (int i = 0; i < this.settings.shortTasks; i++) {
+                auPlayer.getTasks().add(Task.createTask(auPlayer, tasksClone.remove(rand.nextInt(tasksClone.size())).id, auPlayer.isImpostor()));
+            }
+        });
+        this.getPlayers().forEach(auPlayer -> {
+            List<TaskSettings> tasksClone = new ArrayList<>(longTasks);
+            for (int i = 0; i < this.settings.longTasks; i++) {
+                auPlayer.getTasks().add(Task.createTask(auPlayer, tasksClone.get(rand.nextInt(tasksClone.size())).id, auPlayer.isImpostor()));
+            }
+        });
     }
 
     public void stop() {

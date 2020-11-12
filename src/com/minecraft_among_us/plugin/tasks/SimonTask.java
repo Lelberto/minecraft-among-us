@@ -35,8 +35,8 @@ public class SimonTask extends Task {
     private int currentRound;
     private final int nbRounds = 5;
 
-    public SimonTask(AmongUsPlayer auPlayer) {
-        super(ID, auPlayer);
+    public SimonTask(AmongUsPlayer auPlayer, boolean fake) {
+        super(ID, auPlayer, fake);
         this.inventory = this.createInventory();
         this.path = createPath();
         this.showingSteps = false;

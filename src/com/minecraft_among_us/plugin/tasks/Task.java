@@ -17,16 +17,27 @@ import org.bukkit.inventory.EquipmentSlot;
 
 public abstract class Task {
 
+    public static Task createTask(AmongUsPlayer auPlayer, int taskId, boolean fake) {
+        switch (taskId) {
+            case TemperatureHotTask.ID: return new TemperatureHotTask(auPlayer, fake);
+            case TemperatureColdTask.ID: return new TemperatureColdTask(auPlayer, fake);
+            case SimonTask.ID: return new SimonTask(auPlayer, fake);
+            default: return null;
+        }
+    }
+
     protected final int id;
     protected final TaskSettings settings;
     protected AmongUsPlayer auPlayer;
     protected boolean finished;
+    protected final boolean fake;
 
-    public Task(int id, AmongUsPlayer auPlayer) {
+    public Task(int id, AmongUsPlayer auPlayer, boolean fake) {
         this.id = id;
         this.settings = Game.getInstance().getTaskSettings(id);
-        this.finished = false;
         this.auPlayer = auPlayer;
+        this.finished = false;
+        this.fake = fake;
     }
 
     public abstract void execute();
@@ -48,6 +59,20 @@ public abstract class Task {
         return this.finished;
     }
 
+    public boolean isFake() {
+        return fake;
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "auPlayer=" + auPlayer.toString() +
+                "settings=" + settings +
+                ", finished=" + finished +
+                ", fake=" + fake +
+                '}';
+    }
+
     public static class Listener implements org.bukkit.event.Listener {
 
         @EventHandler
@@ -59,7 +84,7 @@ public abstract class Task {
                 TaskSettings taskSettings = Game.getInstance().getTaskSettings(blockLocation);
                 if (taskSettings != null) {
                     Task task = auPlayer.getTask(taskSettings.id);
-                    if (task != null && !task.isFinished()) {
+                    if (task != null && !task.isFinished() && !task.isFake()) {
                         task.execute();
                     }
                 }

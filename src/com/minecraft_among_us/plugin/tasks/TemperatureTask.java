@@ -15,8 +15,8 @@ public abstract class TemperatureTask extends Task {
     protected int currentTemperature;
     protected Inventory inventory;
 
-    public TemperatureTask(int id, AmongUsPlayer auPlayer) {
-        super(id, auPlayer);
+    public TemperatureTask(int id, AmongUsPlayer auPlayer, boolean fake) {
+        super(id, auPlayer, fake);
         int[] temperatures = this.generateTemperatures();
         this.expectedTemperature = temperatures[0];
         this.currentTemperature = temperatures[1];

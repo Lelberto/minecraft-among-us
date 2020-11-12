@@ -18,8 +18,8 @@ public class TemperatureHotTask extends TemperatureTask {
 
     public static final int ID = 0;
 
-    public TemperatureHotTask(AmongUsPlayer auPlayer) {
-        super(ID, auPlayer);
+    public TemperatureHotTask(AmongUsPlayer auPlayer, boolean fake) {
+        super(ID, auPlayer, fake);
     }
 
     @Override
