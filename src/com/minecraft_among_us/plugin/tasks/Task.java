@@ -107,6 +107,10 @@ public abstract class Task {
             List<Task> allTasks = game.getAllTasks();
             List<Task> finishedTasks = allTasks.stream().filter(Task::isFinished).collect(Collectors.toList());
             game.getTaskBar().setProgress((double) finishedTasks.size() / (double) allTasks.size());
+
+            if (allTasks.stream().filter(currentTask -> !currentTask.isFake()).count() == finishedTasks.size()) {
+                game.stop();
+            }
         }
     }
 }
