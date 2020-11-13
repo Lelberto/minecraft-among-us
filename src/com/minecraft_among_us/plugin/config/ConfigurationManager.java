@@ -34,34 +34,34 @@ public class ConfigurationManager {
 
     private ConfigurationManager(File configFile) {
         this.configFile = configFile;
-        this.hubSpawn = new Location(Plugin.getDefaultWorld(), 0, 100, 0);
+        this.hubSpawn = new Location(Plugin.getDefaultWorld(), 0, 0, 0);
         this.mapSpawns = Arrays.asList(
-                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
-                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
-                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
-                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
-                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
-                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
-                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
-                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
-                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0),
-                new Location(Plugin.getDefaultWorld(), 0.0, 100.0, 0.0)
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0)
         );
-        this.computerLocation = new Location(Plugin.getDefaultWorld(), 0, 100, 0);
+        this.computerLocation = new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0);
         this.vents = Arrays.asList(
                 Arrays.asList(
-                        new Location(Plugin.getDefaultWorld(), 10, 100, 0),
-                        new Location(Plugin.getDefaultWorld(), 20, 100, 0)
+                        new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                        new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0)
                 ),
                 Arrays.asList(
-                        new Location(Plugin.getDefaultWorld(), 0, 100, 10),
-                        new Location(Plugin.getDefaultWorld(), 0, 100, 20)
+                        new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                        new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0)
                 )
         );
         this.taskSettings = Arrays.asList(
-                new TaskSettings(0, true, "Lava temperature log", "Update the temperature log", TaskType.SHORT, new Location(Plugin.getDefaultWorld(), 0, 100, 0)),
-                new TaskSettings(1, true, "Laboratory temperature log", "Update the temperature log", TaskType.SHORT, new Location(Plugin.getDefaultWorld(), 0, 100, 0)),
-                new TaskSettings(2, true, "Simon", "Memorize and repeat the Simon", TaskType.LONG, new Location(Plugin.getDefaultWorld(), 0, 100, 0))
+                new TaskSettings(0, true, "Lava temperature log", "Update the temperature log", TaskType.SHORT, new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0)),
+                new TaskSettings(1, true, "Laboratory temperature log", "Update the temperature log", TaskType.SHORT, new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0)),
+                new TaskSettings(2, true, "Simon", "Memorize and repeat the Simon", TaskType.LONG, new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0))
         );
 
         // Configuration file creation

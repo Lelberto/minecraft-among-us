@@ -3,6 +3,9 @@ package com.minecraft_among_us.plugin.config;
 import com.minecraft_among_us.plugin.tasks.TaskType;
 import org.bukkit.Location;
 
+/**
+ * Task settings class.
+ */
 public class TaskSettings {
 
     public final int id;
@@ -12,6 +15,16 @@ public class TaskSettings {
     public final TaskType type;
     public final Location location;
 
+    /**
+     * Creates a new task settings.
+     *
+     * @param id ID
+     * @param enabled Enabled
+     * @param name Name
+     * @param description Description
+     * @param type Type
+     * @param location Location
+     */
     public TaskSettings(int id, boolean enabled, String name, String description, TaskType type, Location location) {
         this.id = id;
         this.enabled = enabled;
