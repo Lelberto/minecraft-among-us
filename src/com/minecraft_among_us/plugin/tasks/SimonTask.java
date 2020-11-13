@@ -1,19 +1,15 @@
 package com.minecraft_among_us.plugin.tasks;
 
-import com.minecraft_among_us.plugin.AmongUsPlayer;
+import com.minecraft_among_us.plugin.game.AmongUsPlayer;
 import com.minecraft_among_us.plugin.Plugin;
-import com.minecraft_among_us.plugin.config.ConfigurationManager;
-import com.mysql.fabric.xmlrpc.base.Array;
+import com.minecraft_among_us.plugin.config.TaskSettings;
+import com.minecraft_among_us.plugin.game.Game;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -23,10 +19,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Simon task class.
+ */
 public class SimonTask extends Task {
 
-    private final ArrayList<Integer> slots = new ArrayList<Integer>(Arrays.asList(0,1,2,9,10,11,18,19,20));
+    public static final int ID = 2;
 
+    private final ArrayList<Integer> slots = new ArrayList<Integer>(Arrays.asList(0,1,2,9,10,11,18,19,20));
     private Inventory inventory;
     private List<Integer> path;
     private boolean showingSteps;
@@ -35,13 +35,14 @@ public class SimonTask extends Task {
     private int currentRound;
     private final int nbRounds = 5;
 
-    public SimonTask(AmongUsPlayer auPlayer) {
-        super(
-                ConfigurationManager.getInstance().simonTaskSettings.name,
-                ConfigurationManager.getInstance().simonTaskSettings.description,
-                ConfigurationManager.getInstance().simonTaskSettings.type,
-                auPlayer
-        );
+    /**
+     * Creates a new Simon task.
+     *
+     * @param auPlayer Player
+     * @param fake Fake task (for impostors)
+     */
+    public SimonTask(AmongUsPlayer auPlayer, boolean fake) {
+        super(ID, auPlayer, fake);
         this.inventory = this.createInventory();
         this.path = createPath();
         this.showingSteps = false;
@@ -59,8 +60,19 @@ public class SimonTask extends Task {
         this.showSteps(this.currentRound);
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+        ((Player) this.auPlayer.toBukkitPlayer()).closeInventory();
+    }
+
+    /**
+     * Creates the task inventory.
+     *
+     * @return Task inventory
+     */
     private Inventory createInventory() {
-        Inventory inventory = Bukkit.createInventory(null, InventoryType.CHEST, this.name);
+        Inventory inventory = Bukkit.createInventory(null, InventoryType.CHEST, this.settings.name);
 
         for (int slot: slots) {
             this.setUntouchedItem(inventory, slot);
@@ -69,6 +81,11 @@ public class SimonTask extends Task {
         return inventory;
     }
 
+    /**
+     * Creates path.
+     *
+     * @return Path
+     */
     private ArrayList<Integer> createPath() {
         Random random = new Random();
 
@@ -80,7 +97,11 @@ public class SimonTask extends Task {
         return path;
     }
 
-
+    /**
+     * Shows steps.
+     *
+     * @param round Current round
+     */
     private void showSteps(int round) {
         this.timesMaster = 0;
         this.timesPlayer = 0;
@@ -102,6 +123,9 @@ public class SimonTask extends Task {
         }, 20L, 10L);
     }
 
+    /**
+     * Sets next round.
+     */
     private void nextRound() {
         this.currentRound++;
         // Strict compare : nbRounds is a size.
@@ -112,12 +136,12 @@ public class SimonTask extends Task {
         }
     }
 
-    @Override
-    public void finish() {
-        super.finish();
-        ((Player) this.auPlayer.toBukkitPlayer()).closeInventory();
-    }
-
+    /**
+     * Plays the Simon.
+     *
+     * @param inventory Task inventory
+     * @param slot Clicked slot
+     */
     public void playerPlay(Inventory inventory, int slot) {
         if (!this.showingSteps && inventory.equals(this.inventory)) {
             if (slot == this.path.get(this.timesPlayer)) {
@@ -133,6 +157,12 @@ public class SimonTask extends Task {
         }
     }
 
+    /**
+     * Sets untouched item.
+     *
+     * @param inventory Task inventory
+     * @param slot Current slot
+     */
     private void setUntouchedItem(Inventory inventory, int slot) {
         ItemStack item = new ItemStack(Material.LIGHT_GRAY_CONCRETE);
         ItemMeta itemMeta = item.getItemMeta();
@@ -141,27 +171,41 @@ public class SimonTask extends Task {
         inventory.setItem(slot, item);
     }
 
-
-
+    /**
+     * Marks the current round as successful.
+     */
     private void markRoundAsSuccessful() {
        this.markRoundAsSuccessful(this.currentRound);
     }
 
+    /**
+     * Marks a round as successful.
+     *
+     * @param round Round to mark
+     */
     private void markRoundAsSuccessful(int round) {
        this.inventory.setItem(4 + round, new ItemStack(Material.GREEN_CONCRETE) );
     }
 
+    /**
+     * Marks the current round as failed.
+     */
     private void markRoundAsFailed() {
         this.inventory.setItem(4 + this.currentRound, new ItemStack(Material.RED_CONCRETE) );
     }
 
-
+    /**
+     * Marks all rounds as pending.
+     */
     private void markAllRoundAsPending() {
         for (int i = 0; i < nbRounds; i++) {
             this.inventory.setItem(4 + i, new ItemStack(Material.GRAY_CONCRETE) );
         }
     }
 
+    /**
+     * Marks successful rounds as successful.
+     */
     private void markSuccessfulRoundsAsSuccessful() {
         for (int i = 0; i < currentRound; i++) {
             this.markRoundAsSuccessful(i);
@@ -169,31 +213,25 @@ public class SimonTask extends Task {
     }
 
 
+    /**
+     * Listener subclass.
+     */
     public static class Listener implements org.bukkit.event.Listener {
 
-        @EventHandler
-        public void onTaskLaunch(PlayerInteractEvent e) {
-            if (e.getHand().equals(EquipmentSlot.HAND)
-                    && e.getAction().equals(Action.RIGHT_CLICK_BLOCK)
-                    && e.getClickedBlock().getLocation().equals(ConfigurationManager.getInstance().simonTaskSettings.location)) {
-                Player player = e.getPlayer();
-                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
-                Task task = auPlayer.getTask(ConfigurationManager.getInstance().simonTaskSettings.name);
-                if (task != null && !task.finished) {
-                    task.execute();
-                }
-            }
-        }
-
+        /**
+         * Event triggered when a player interacts with the task.
+         *
+         * @param e Event
+         */
         @EventHandler
         public void onClick(InventoryClickEvent e) {
-            if (e.getView().getTitle().equals(ConfigurationManager.getInstance().simonTaskSettings.name)) {
+            TaskSettings settings = Game.getInstance().getTaskSettings(ID);
+            if (e.getView().getTitle().equals(settings.name)) {
                 e.setCancelled(true);
-                Player player = (Player) e.getWhoClicked();
-                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
+                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(e.getWhoClicked().getUniqueId());
                 ItemStack currentItem = e.getCurrentItem();
                 if (currentItem != null) {
-                    SimonTask task = (SimonTask) auPlayer.getTask(ConfigurationManager.getInstance().simonTaskSettings.name);
+                    SimonTask task = (SimonTask) auPlayer.getTask(settings.name);
                     task.playerPlay(e.getClickedInventory(), e.getSlot());
                 }
             }

@@ -4,6 +4,9 @@ version: "1.0.0"
 authors: ["Lelberto", "MrPopop69"]
 api-version: "1.16"
 commands:
+  game:
+    description: "Manages the game"
+    usage: "/game"
   test:
     description: "Test command for MinecraftAmongUs plugin"
     usage: "/test"

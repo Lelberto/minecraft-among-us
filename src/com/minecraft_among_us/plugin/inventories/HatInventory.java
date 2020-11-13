@@ -1,6 +1,6 @@
 package com.minecraft_among_us.plugin.inventories;
 
-import com.minecraft_among_us.plugin.AmongUsPlayer;
+import com.minecraft_among_us.plugin.game.AmongUsPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -11,8 +11,16 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * Hat inventory class.
+ */
 public class HatInventory extends BaseInventory {
 
+    /**
+     * Creates the hat inventory.
+     *
+     * @param auPlayer Linked player
+     */
     public HatInventory(AmongUsPlayer auPlayer) {
         super(auPlayer);
     }
@@ -39,13 +47,29 @@ public class HatInventory extends BaseInventory {
                 new ItemStack(Material.WARPED_NYLIUM),
                 new ItemStack(Material.WHITE_CARPET),
                 new ItemStack(Material.OAK_STAIRS),
-                new ItemStack(Material.OAK_SLAB)
+                new ItemStack(Material.OAK_SLAB),
+                new ItemStack(Material.BEDROCK),
+                new ItemStack(Material.OAK_LOG),
+                new ItemStack(Material.MELON),
+                new ItemStack(Material.DRIED_KELP_BLOCK),
+                new ItemStack(Material.WHITE_STAINED_GLASS),
+                new ItemStack(Material.SPONGE),
+                new ItemStack(Material.TARGET)
         });
         return inventory;
     }
 
+
+    /**
+     * Listener subclass.
+     */
     public static class Listener implements org.bukkit.event.Listener {
 
+        /**
+         * Event triggered when a player interacts with the hat inventory.
+         *
+         * @param e Event
+         */
         @EventHandler
         public void onClick(InventoryClickEvent e) {
             if (e.getView().getTitle().equals("Hats")) {
@@ -55,7 +79,7 @@ public class HatInventory extends BaseInventory {
                     AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
                     ItemStack currentItem = e.getCurrentItem();
                     if (currentItem != null) {
-                        auPlayer.setHat(e.getCurrentItem());
+                        auPlayer.setHat(currentItem);
                         auPlayer.refreshEquipment();
                         player.closeInventory();
                     }

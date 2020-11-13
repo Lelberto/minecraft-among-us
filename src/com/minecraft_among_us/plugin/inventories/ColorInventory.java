@@ -1,7 +1,7 @@
 package com.minecraft_among_us.plugin.inventories;
 
-import com.minecraft_among_us.plugin.AmongUsPlayer;
-import com.minecraft_among_us.plugin.Color;
+import com.minecraft_among_us.plugin.game.AmongUsPlayer;
+import com.minecraft_among_us.plugin.game.Color;
 import com.minecraft_among_us.plugin.game.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -16,8 +16,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
+/**
+ * Color inventory class.
+ */
 public class ColorInventory extends BaseInventory {
 
+    /**
+     * Creates a new color inventory.
+     *
+     * @param auPlayer Linked player
+     */
     public ColorInventory(AmongUsPlayer auPlayer) {
         super(auPlayer);
     }
@@ -87,6 +95,11 @@ public class ColorInventory extends BaseInventory {
         limeItemMeta.setDisplayName("§aLime");
         limeItem.setItemMeta(limeItemMeta);
 
+        ItemStack backItem = new ItemStack(Material.STICK);
+        ItemMeta backItemMeta = backItem.getItemMeta();
+        backItemMeta.setDisplayName("§cBack");
+        backItem.setItemMeta(backItemMeta);
+
         inventory.setItem(0, redItem);
         inventory.setItem(1, blueItem);
         inventory.setItem(2, greenItem);
@@ -99,11 +112,21 @@ public class ColorInventory extends BaseInventory {
         inventory.setItem(9, brownItem);
         inventory.setItem(10, cyanItem);
         inventory.setItem(11, limeItem);
+        inventory.setItem(26, backItem);
         return inventory;
     }
 
+
+    /**
+     * Listener subclass.
+     */
     public static class Listener implements org.bukkit.event.Listener {
 
+        /**
+         * Event triggered when a player interacts with the color inventory.
+         *
+         * @param e Event
+         */
         @EventHandler
         public void onClick(InventoryClickEvent e) {
             if (e.getView().getTitle().equals("Change color")) {
@@ -151,6 +174,8 @@ public class ColorInventory extends BaseInventory {
                         } else if (currentMaterial.equals(Material.LIME_WOOL) && availableColors.contains(Color.LIME)) {
                             auPlayer.setColor(Color.LIME);
                             player.closeInventory();
+                        } else if (currentMaterial.equals(Material.STICK)) {
+                            player.openInventory(new ComputerInventory(auPlayer).create());
                         }
                         auPlayer.refreshEquipment();
                         auPlayer.refreshBar();
