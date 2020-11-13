@@ -1,5 +1,6 @@
 package com.minecraft_among_us.plugin;
 
+import com.minecraft_among_us.plugin.commands.GameCommand;
 import com.minecraft_among_us.plugin.commands.TestCommand;
 import com.minecraft_among_us.plugin.game.AmongUsPlayer;
 import com.minecraft_among_us.plugin.game.Game;
@@ -72,6 +73,7 @@ public class Plugin extends JavaPlugin {
         super.onEnable();
 
         // Commands registration
+        this.getCommand("game").setExecutor(new GameCommand());
         this.getCommand("test").setExecutor(new TestCommand());
 
         // Listeners registration
@@ -93,6 +95,8 @@ public class Plugin extends JavaPlugin {
             player.setCollidable(false);
             game.getPlayers().add(new AmongUsPlayer(player.getUniqueId(), game.randomColor()));
         });
+        // Sets the dev mode
+        game.setDevMode(true);
     }
 
     @Override
