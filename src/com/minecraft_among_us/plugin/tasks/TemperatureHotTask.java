@@ -1,6 +1,6 @@
 package com.minecraft_among_us.plugin.tasks;
 
-import com.minecraft_among_us.plugin.AmongUsPlayer;
+import com.minecraft_among_us.plugin.game.AmongUsPlayer;
 import com.minecraft_among_us.plugin.config.TaskSettings;
 import com.minecraft_among_us.plugin.game.Game;
 import org.bukkit.Material;
@@ -8,16 +8,23 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Random;
 
+/**
+ * Temperature hot task class.
+ */
 public class TemperatureHotTask extends TemperatureTask {
 
     public static final int ID = 0;
 
+    /**
+     * Creates a new temperature hot task.
+     *
+     * @param auPlayer Player
+     * @param fake Fake task (for impostors)
+     */
     public TemperatureHotTask(AmongUsPlayer auPlayer, boolean fake) {
         super(ID, auPlayer, fake);
     }
@@ -42,8 +49,16 @@ public class TemperatureHotTask extends TemperatureTask {
         ((Player) this.auPlayer.toBukkitPlayer()).closeInventory();
     }
 
+    /**
+     * Listener subclass.
+     */
     public static class Listener implements org.bukkit.event.Listener {
 
+        /**
+         * Event triggered when a player interacts with the task.
+         *
+         * @param e Event
+         */
         @EventHandler
         public void onClick(InventoryClickEvent e) {
             TaskSettings settings = Game.getInstance().getTaskSettings(ID);

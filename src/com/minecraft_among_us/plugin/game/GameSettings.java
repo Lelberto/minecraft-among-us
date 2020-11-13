@@ -1,5 +1,8 @@
 package com.minecraft_among_us.plugin.game;
 
+/**
+ * Game settings class.
+ */
 public class GameSettings {
 
     public int impostors;
@@ -13,11 +16,19 @@ public class GameSettings {
     public int longTasks;
     public int shortTasks;
 
+    /**
+     * Creates a new game settings.
+     */
     protected GameSettings() {
         recommended(0);
     }
 
-    private void recommended(int playerCount) {
+    /**
+     * Sets the settings to recommended in terms of player count.
+     *
+     * @param playerCount Player count
+     */
+    public void recommended(int playerCount) {
         switch (playerCount) {
             default:
             case 4:

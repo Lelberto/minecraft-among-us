@@ -1,11 +1,9 @@
 package com.minecraft_among_us.plugin.inventories;
 
-import com.minecraft_among_us.plugin.AmongUsPlayer;
-import com.minecraft_among_us.plugin.Plugin;
+import com.minecraft_among_us.plugin.game.AmongUsPlayer;
 import com.minecraft_among_us.plugin.game.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -16,8 +14,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
+/**
+ * Game settings inventory class.
+ */
 public class GameSettingsInventory extends BaseInventory {
 
+    /**
+     * Creates a new game settings inventory.
+     *
+     * @param auPlayer Linked player
+     */
     public GameSettingsInventory(AmongUsPlayer auPlayer) {
         super(auPlayer);
     }
@@ -87,6 +93,12 @@ public class GameSettingsInventory extends BaseInventory {
         shortTasksItemMeta.setLore(Arrays.asList("§7Number of short tasks : §a" + game.getSettings().shortTasks));
         shortTasksItem.setItemMeta(shortTasksItemMeta);
 
+        ItemStack recommendedItem = new ItemStack(Material.SEA_LANTERN);
+        ItemMeta recommendedItemMeta = recommendedItem.getItemMeta();
+        recommendedItemMeta.setDisplayName("Recommended settings");
+        recommendedItemMeta.setLore(Arrays.asList("§7Recommended settings for §a" + game.getPlayers().size() + "§7 players"));
+        recommendedItem.setItemMeta(recommendedItemMeta);
+
         inventory.setItem(0, impostorsItem);
         inventory.setItem(1, confirmEjectsItem);
         inventory.setItem(2, emergencyMeetingsItem);
@@ -97,18 +109,26 @@ public class GameSettingsInventory extends BaseInventory {
         inventory.setItem(7, commonTasksItem);
         inventory.setItem(8, longTasksItem);
         inventory.setItem(9, shortTasksItem);
+        inventory.setItem(26, recommendedItem);
         return inventory;
     }
 
+
+    /**
+     * Listener subclass.
+     */
     public static class Listener implements org.bukkit.event.Listener {
 
+        /**
+         * Event triggered when a player interacts with the computer inventory.
+         *
+         * @param e Event
+         */
         @EventHandler
         public void onClick(InventoryClickEvent e) {
             if (e.getView().getTitle().equals("Game settings")) {
                 e.setCancelled(true);
                 if (e.getAction().equals(InventoryAction.PICKUP_ALL)) {
-                    Player player = (Player) e.getWhoClicked();
-                    AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
                     ItemStack currentItem = e.getCurrentItem();
                     if (currentItem != null) {
                         Game game = Game.getInstance();
@@ -199,6 +219,9 @@ public class GameSettingsInventory extends BaseInventory {
                             ItemMeta currentItemItemMeta = currentItem.getItemMeta();
                             currentItemItemMeta.setLore(Arrays.asList("§7Number of short tasks : §a" + game.getSettings().shortTasks));
                             currentItem.setItemMeta(currentItemItemMeta);
+                        } else if (currentMaterial.equals(Material.SEA_LANTERN)) {
+                            game.getSettings().recommended(game.getPlayers().size());
+                            e.getWhoClicked().closeInventory();
                         }
                     }
                 }
