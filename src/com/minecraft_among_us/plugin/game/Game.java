@@ -43,6 +43,7 @@ public class Game {
         return Game.INSTANCE;
     }
 
+    private boolean devMode;
     private GameSettings settings;
     private GameState state;
     private final List<AmongUsPlayer> players;
@@ -53,6 +54,7 @@ public class Game {
      * Creates a new game.
      */
     private Game() {
+        this.devMode = false;
         this.settings = new GameSettings();
         this.state = GameState.HUB;
         this.players = new ArrayList<>();
@@ -171,6 +173,24 @@ public class Game {
         } else if (allTasks.stream().filter(currentTask -> !currentTask.isFake()).count() == finishedTasks.size()) {
             // TODO Crewmates wins
         }
+    }
+
+    /**
+     * Gets dev mode.
+     *
+     * @return Dev mode
+     */
+    public boolean isDevMode() {
+        return this.devMode;
+    }
+
+    /**
+     * Sets dev mode.
+     *
+     * @param devMode Dev mode
+     */
+    public void setDevMode(boolean devMode) {
+        this.devMode = devMode;
     }
 
     /**
@@ -332,7 +352,9 @@ public class Game {
          */
         @EventHandler
         public void onDamage(EntityDamageByEntityEvent e) {
-            e.setCancelled(true);
+            if (!Game.getInstance().isDevMode()) {
+                e.setCancelled(true);
+            }
         }
 
         /**
@@ -342,7 +364,9 @@ public class Game {
          */
         @EventHandler
         public void onDamage(PlayerInteractAtEntityEvent e) {
-            e.setCancelled(true);
+            if (!Game.getInstance().isDevMode()) {
+                e.setCancelled(true);
+            }
         }
 
         /**
@@ -352,7 +376,9 @@ public class Game {
          */
         @EventHandler
         public void onDamage(PlayerInteractEvent e) {
-            e.setCancelled(true);
+            if (!Game.getInstance().isDevMode()) {
+                e.setCancelled(true);
+            }
         }
     }
 }
