@@ -456,7 +456,7 @@ public class AmongUsPlayer {
                 AmongUsPlayer auTarget = AmongUsPlayer.getPlayer(UUID.fromString(e.getRightClicked().getMetadata("dead_body").get(0).asString()));
                 if (auPlayer.isAlive()) {
                     e.getRightClicked().remove();
-                    Game.getInstance().startVote(auPlayer, false);
+                    new Vote(auPlayer, false).start();
                 }
             }
         }
@@ -472,7 +472,7 @@ public class AmongUsPlayer {
             Player player = e.getPlayer();
             AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
             if (game.getState().equals(GameState.IN_PROGRESS) && auPlayer.isAlive() && e.getHand().equals(EquipmentSlot.HAND) && e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getClickedBlock().getLocation().equals(ConfigurationManager.getInstance().emergencyLocation)) {
-                game.startVote(auPlayer, true);
+                new Vote(auPlayer, true).start();
             }
         }
 
