@@ -393,6 +393,7 @@ public class AmongUsPlayer {
             Game game = Game.getInstance();
             if (game.getState() == GameState.HUB) {
                 e.setJoinMessage("§7[§a+§7]§r §6" + player.getName());
+                player.setGameMode(GameMode.ADVENTURE);
                 game.getPlayers().add(new AmongUsPlayer(player.getUniqueId(), game.randomColor()));
                 player.teleport(ConfigurationManager.getInstance().hubSpawn);
                 Bukkit.getOnlinePlayers().forEach(currentPlayer -> currentPlayer.playSound(currentPlayer.getLocation(), Sound.ENTITY_BAT_AMBIENT, SoundCategory.AMBIENT, 1.0F, 0.0F));
@@ -412,11 +413,12 @@ public class AmongUsPlayer {
         public void onQuit(PlayerQuitEvent e) {
             Game game = Game.getInstance();
             Player player = e.getPlayer();
+            game.getPlayers().remove(AmongUsPlayer.getPlayer(player.getUniqueId()));
             if (game.getState().equals(GameState.HUB)) {
-                game.getPlayers().remove(AmongUsPlayer.getPlayer(player.getUniqueId()));
                 e.setQuitMessage("§7[§c-§7]§r §6" + player.getName());
             } else {
                 e.setQuitMessage(null);
+                game.checkEndGame();
             }
         }
 
@@ -451,11 +453,26 @@ public class AmongUsPlayer {
         public void onDiscoverDeadBody(PlayerInteractAtEntityEvent e) {
             if (e.getHand().equals(EquipmentSlot.HAND) && e.getRightClicked().hasMetadata("dead_body")) {
                 AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(e.getPlayer().getUniqueId());
-                AmongUsPlayer auTarget = AmongUsPlayer.getPlayer(UUID.fromString(e.getRightClicked().getMetadata("target").get(0).asString()));
+                AmongUsPlayer auTarget = AmongUsPlayer.getPlayer(UUID.fromString(e.getRightClicked().getMetadata("dead_body").get(0).asString()));
                 if (auPlayer.isAlive()) {
                     e.getRightClicked().remove();
-                    // TODO Start vote
+                    Game.getInstance().startVote(auPlayer, false);
                 }
+            }
+        }
+
+        /**
+         * Event triggered when a player calls an emergency alert.
+         *
+         * @param e Event
+         */
+        @EventHandler
+        public void onEmergencyCall(PlayerInteractEvent e) {
+            Game game = Game.getInstance();
+            Player player = e.getPlayer();
+            AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
+            if (game.getState().equals(GameState.IN_PROGRESS) && auPlayer.isAlive() && e.getHand().equals(EquipmentSlot.HAND) && e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getClickedBlock().getLocation().equals(ConfigurationManager.getInstance().emergencyLocation)) {
+                game.startVote(auPlayer, true);
             }
         }
 
