@@ -48,7 +48,10 @@ public class Game {
     private GameState state;
     private final List<AmongUsPlayer> players;
     private final BossBar taskBar;
+    private final BossBar votingBar;
     private int startCooldown;
+    private int discussionTimeCooldown;
+    private int votingTimeCooldown;
 
     /**
      * Creates a new game.
@@ -59,7 +62,10 @@ public class Game {
         this.state = GameState.HUB;
         this.players = new ArrayList<>();
         this.taskBar = Bukkit.createBossBar("Tasks completed", BarColor.GREEN, BarStyle.SEGMENTED_10);
+        this.votingBar = Bukkit.createBossBar("Voting time", BarColor.WHITE, BarStyle.SOLID);
         this.startCooldown = 5;
+        this.discussionTimeCooldown = this.settings.discussionTime;
+        this.votingTimeCooldown = this.settings.votingTime;
     }
 
     /**
@@ -158,6 +164,80 @@ public class Game {
                 auPlayer.getTasks().add(Task.createTask(auPlayer, tasksClone.get(rand.nextInt(tasksClone.size())).id, auPlayer.isImpostor()));
             }
         });
+    }
+
+    /**
+     * Starts the voting time.
+     *
+     * @param auCaller Player who called the voting time (by emergency or discover dead body)
+     * @param emergency True will starts the vote by emergency call, false will starts the vote by discovering dead body
+     */
+    public void startVote(AmongUsPlayer auCaller, boolean emergency) {
+        this.state = GameState.VOTE;
+        List<Location> emergencySpawns = ConfigurationManager.getInstance().mapEmergency;
+        int i = 0;
+        for (Player player : this.players.stream().filter(AmongUsPlayer::isAlive).map(AmongUsPlayer::toBukkitPlayer).map(OfflinePlayer::getPlayer).collect(Collectors.toList())) {
+            player.teleport(emergencySpawns.get(i++));
+            player.sendTitle(emergency ? "§cEmergency call" : "§cDead body found", emergency ? "§7Called by" : "§7Founded by" + " §6" + auCaller.toBukkitPlayer().getName(), 5, 80, 15);
+            player.playSound(player.getLocation(), emergency ? Sound.ENTITY_PLAYER_LEVELUP : Sound.ENTITY_ZOMBIE_VILLAGER_CONVERTED, SoundCategory.AMBIENT, 1.0F, 0.0F);
+            player.setWalkSpeed(0.0F);
+            player.setFoodLevel(6);
+            player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 999999, 200, false, false, false));
+        }
+        this.startDiscussionTime();
+    }
+
+    /**
+     * Stops the voting vote.
+     */
+    public void stopVote() {
+        this.state = GameState.IN_PROGRESS;
+        this.votingBar.removeAll();
+        this.players.stream().filter(AmongUsPlayer::isAlive).map(AmongUsPlayer::toBukkitPlayer).map(OfflinePlayer::getPlayer).collect(Collectors.toList()).forEach(player -> {
+            player.setWalkSpeed(0.2F);
+            player.setFoodLevel(20);
+            player.removePotionEffect(PotionEffectType.JUMP);
+            player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, SoundCategory.AMBIENT, 1.0F, 1.0F);
+        });
+    }
+
+    /**
+     * Starts the discussion time.
+     */
+    private void startDiscussionTime() {
+        this.votingBar.setTitle("Discussion time");
+        Bukkit.getOnlinePlayers().forEach(this.votingBar::addPlayer);
+        Bukkit.getScheduler().runTaskTimer(Plugin.getPlugin(), task -> {
+            if (this.discussionTimeCooldown > 0) {
+                this.votingBar.setProgress((double) this.discussionTimeCooldown / (double) this.settings.discussionTime);
+                this.discussionTimeCooldown--;
+            } else {
+                this.discussionTimeCooldown = this.settings.discussionTime;
+                this.startVotingTime();
+                task.cancel();
+            }
+        }, 0L, 20L);
+    }
+
+    /**
+     * Starts the voting time.
+     */
+    private void startVotingTime() {
+        this.votingBar.setTitle("Voting time");
+        Bukkit.getScheduler().runTaskTimer(Plugin.getPlugin(), votingTask -> {
+            if (this.votingTimeCooldown <= 10) {
+                this.votingBar.setColor(this.votingTimeCooldown % 2 == 0 ? BarColor.WHITE : BarColor.RED);
+                Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, SoundCategory.AMBIENT, 1.0F, 1.0F - ((float) this.votingTimeCooldown * 0.1F) + 1.0F));
+            }
+            if (this.votingTimeCooldown > 0) {
+                this.votingBar.setProgress((double) this.votingTimeCooldown / (double) this.settings.votingTime);
+                this.votingTimeCooldown--;
+            } else {
+                this.votingTimeCooldown = this.settings.votingTime;
+                stopVote();
+                votingTask.cancel();
+            }
+        }, 0L, 20L);
     }
 
     /**
