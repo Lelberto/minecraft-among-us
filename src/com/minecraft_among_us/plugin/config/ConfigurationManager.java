@@ -28,6 +28,7 @@ public class ConfigurationManager {
     private final File configFile;
     public Location hubSpawn;
     public List<Location> mapSpawns;
+    public List<Location> mapEmergency;
     public Location computerLocation;
     public Location emergencyLocation;
     public List<List<Location>> vents;
@@ -37,6 +38,18 @@ public class ConfigurationManager {
         this.configFile = configFile;
         this.hubSpawn = new Location(Plugin.getDefaultWorld(), 0, 0, 0);
         this.mapSpawns = Arrays.asList(
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
+                new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0)
+        );
+        this.mapEmergency = Arrays.asList(
                 new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
                 new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
                 new Location(Plugin.getDefaultWorld(), 0.0, 0.0, 0.0),
@@ -74,6 +87,7 @@ public class ConfigurationManager {
                 hubSection.set("spawn", this.hubSpawn);
                 ConfigurationSection mapSection = config.createSection("map");
                 mapSection.set("spawns", this.mapSpawns);
+                mapSection.set("emergency", this.mapEmergency);
                 ConfigurationSection computerSection = config.createSection("computer");
                 computerSection.set("location", this.computerLocation);
                 ConfigurationSection emergencySection = config.createSection("emergency");
@@ -100,6 +114,7 @@ public class ConfigurationManager {
         this.hubSpawn = hubSection.getLocation("spawn");
         ConfigurationSection mapSection = config.getConfigurationSection("map");
         this.mapSpawns = (List<Location>) mapSection.getList("spawns");
+        this.mapEmergency = (List<Location>) mapSection.getList("emergency");
         ConfigurationSection computerSection = config.getConfigurationSection("computer");
         this.computerLocation = computerSection.getLocation("location");
         ConfigurationSection emergencySection = config.getConfigurationSection("emergency");
