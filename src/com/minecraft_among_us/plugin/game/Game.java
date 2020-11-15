@@ -47,6 +47,7 @@ public class Game {
     private GameSettings settings;
     private GameState state;
     private final List<AmongUsPlayer> players;
+    private Vote currentVote;
     private final BossBar taskBar;
     private final BossBar votingBar;
     private int startCooldown;
@@ -111,6 +112,7 @@ public class Game {
      */
     public void stop() {
         Bukkit.broadcastMessage("game ends");
+        this.taskBar.removeAll();
     }
 
     /**
@@ -247,6 +249,24 @@ public class Game {
      */
     public List<AmongUsPlayer> getImpostors() {
         return this.players.stream().filter(AmongUsPlayer::isImpostor).collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the current vote.
+     *
+     * @return Current vote
+     */
+    public Vote getCurrentVote() {
+        return currentVote;
+    }
+
+    /**
+     * Sets the current vote.
+     *
+     * @param currentVote Current vote
+     */
+    public void setCurrentVote(Vote currentVote) {
+        this.currentVote = currentVote;
     }
 
     /**
