@@ -93,8 +93,6 @@ public class Plugin extends JavaPlugin {
             player.setCollidable(false);
             game.getPlayers().add(new AmongUsPlayer(player.getUniqueId(), game.randomColor()));
         });
-        // Sets the dev mode
-        game.setDevMode(true);
     }
 
     @Override
