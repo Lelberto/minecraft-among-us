@@ -18,12 +18,15 @@ import java.util.stream.Collectors;
  */
 public class VoteSystem {
 
+    private static final int END_TIME_COOLDOWN = 5;
+
     private final AmongUsPlayer auCaller;
     private final List<Vote> votes;
     private final List<AmongUsPlayer> skipVotes;
     private final boolean emergency;
     private int discussionTimeCooldown;
     private int votingTimeCooldown;
+    private int endTimeCooldown;
 
     /**
      * Creates a new vote system.
@@ -39,6 +42,7 @@ public class VoteSystem {
         this.emergency = emergency;
         this.discussionTimeCooldown = game.getSettings().discussionTime;
         this.votingTimeCooldown = game.getSettings().votingTime;
+        this.endTimeCooldown = VoteSystem.END_TIME_COOLDOWN;
     }
 
     /**
@@ -46,7 +50,7 @@ public class VoteSystem {
      */
     public void start() {
         Game game = Game.getInstance();
-        game.setState(GameState.VOTE);
+        game.setState(GameState.VOTE_DISCUSSION);
         game.setCurrentVoteSystem(this);
         List<Location> emergencySpawns = ConfigurationManager.getInstance().mapEmergency;
         int i = 0;
@@ -54,7 +58,7 @@ public class VoteSystem {
             Player player = (Player) auPlayer.toBukkitPlayer();
             auPlayer.refreshBar();
             player.teleport(emergencySpawns.get(i++));
-            player.sendTitle(emergency ? "§cEmergency call" : "§cDead body found", emergency ? "§7Called by" : "§7Founded by" + " §6" + auCaller.toBukkitPlayer().getName(), 5, 80, 15);
+            player.sendTitle(emergency ? "§cEmergency call" : "§cDead body found", (emergency ? "§7Called by" : "§7Founded by") + " §6" + auCaller.toBukkitPlayer().getName(), 5, 80, 15);
             player.playSound(player.getLocation(), emergency ? Sound.ENTITY_PLAYER_LEVELUP : Sound.ENTITY_ZOMBIE_VILLAGER_CONVERTED, SoundCategory.AMBIENT, 1.0F, 0.0F);
             player.setWalkSpeed(0.0F);
             player.setFoodLevel(6);
@@ -79,6 +83,17 @@ public class VoteSystem {
             player.removePotionEffect(PotionEffectType.JUMP);
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, SoundCategory.AMBIENT, 1.0F, 1.0F);
         });
+
+        AmongUsPlayer auEjected = this.getResult();
+        if (auEjected != null) {
+            Player ejected = (Player) auEjected.toBukkitPlayer();
+            ejected.setGameMode(GameMode.SPECTATOR);
+            Bukkit.getOnlinePlayers().forEach(player -> player.playSound(ejected.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 0.5F));
+            ejected.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, ejected.getLocation(), 100, 0.8, 0.8, 0.8, 0.5);
+            ejected.getWorld().spawnParticle(Particle.FLAME, ejected.getLocation(), 1000, 0.3, 0.3, 0.3, 0.1);
+            auEjected.setAlive(false);
+            game.checkEndGame();
+        }
     }
 
     /**
@@ -124,6 +139,7 @@ public class VoteSystem {
      */
     private void startVotingTime() {
         Game game = Game.getInstance();
+        game.setState(GameState.VOTE_PROGRESS);
         game.getVotingBar().setTitle("Voting time");
         Bukkit.getScheduler().runTaskTimer(Plugin.getPlugin(), votingTask -> {
             if (this.votingTimeCooldown <= 10) {
@@ -135,8 +151,48 @@ public class VoteSystem {
                 this.votingTimeCooldown--;
             } else {
                 this.votingTimeCooldown = game.getSettings().votingTime;
-                this.stop();
+                this.startEndTime();
                 votingTask.cancel();
+            }
+        }, 0L, 20L);
+    }
+
+    /**
+     * Starts the end time.
+     */
+    private void startEndTime() {
+        Game game = Game.getInstance();
+        game.setState(GameState.VOTE_END);
+
+        StringBuilder sb = new StringBuilder(Plugin.getPluginNameChat()).append("§lVote results");
+        if (this.votes.isEmpty()) {
+            sb.append("\n§cNo votes");
+        } else {
+            this.votes.forEach(vote -> {
+                AmongUsPlayer auVoted = vote.getVoted();
+                sb.append("\n§7- ").append(auVoted.getColor().code).append(auVoted.toBukkitPlayer().getName()).append("§r :");
+                vote.getVoters().forEach(auVoter -> sb.append(" ").append(auVoter.getColor().code).append("▉"));
+            });
+        }
+        if (this.skipVotes.isEmpty()) {
+            sb.append("\n§cNo skip votes");
+        } else {
+            sb.append("\n§7§i- Skip votes :");
+            this.skipVotes.forEach(auSkipVoter -> {
+                sb.append(" ").append(auSkipVoter.getColor().code).append("▉");
+            });
+        }
+        Bukkit.broadcastMessage(sb.toString());
+
+        game.getVotingBar().setTitle("End voting time");
+        Bukkit.getScheduler().runTaskTimer(Plugin.getPlugin(), (task) -> {
+            if (this.endTimeCooldown > 0) {
+                game.getVotingBar().setProgress((double) this.endTimeCooldown / (double) VoteSystem.END_TIME_COOLDOWN);
+                this.endTimeCooldown--;
+            } else {
+                this.endTimeCooldown = VoteSystem.END_TIME_COOLDOWN;
+                this.stop();
+                task.cancel();
             }
         }, 0L, 20L);
     }
@@ -178,7 +234,6 @@ public class VoteSystem {
     public AmongUsPlayer getResult() {
         Collections.sort(this.votes);
         Collections.reverse(this.votes);
-        Bukkit.broadcastMessage(this.votes.toString());
 
         if (this.votes.isEmpty()) { // If no vote
             return null;

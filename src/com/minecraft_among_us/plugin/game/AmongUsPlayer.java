@@ -151,7 +151,7 @@ public class AmongUsPlayer {
     public void refreshBar() {
         PlayerInventory inventory = ((Player) this.toBukkitPlayer()).getInventory();
 
-        if (Game.getInstance().getState().equals(GameState.VOTE)) {
+        if (GameState.isVote(Game.getInstance().getState())) {
             for (int i = 0; i < 9; i++) {
                 if (i == 0) {
                     ItemStack voteItem = new ItemStack(Material.PAPER);
@@ -484,7 +484,6 @@ public class AmongUsPlayer {
                 if (auPlayer.isAlive()) {
                     Game game = Game.getInstance();
                     e.getRightClicked().remove();
-                    game.checkEndGame();
                     if (game.getState().equals(GameState.IN_PROGRESS)) {
                         new VoteSystem(auPlayer, false).start();
                     }

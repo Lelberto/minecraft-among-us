@@ -140,7 +140,7 @@ public class VoteInventory extends BaseInventory {
         @EventHandler
         public void onOpenVote(PlayerInteractEvent e) {
             Game game = Game.getInstance();
-            if (game.getState().equals(GameState.VOTE) && e.getHand().equals(EquipmentSlot.HAND) && e.getItem() != null && e.getItem().getType().equals(Material.PAPER)) {
+            if (game.getState().equals(GameState.VOTE_PROGRESS) && e.getHand().equals(EquipmentSlot.HAND) && e.getItem() != null && e.getItem().getType().equals(Material.PAPER)) {
                 Player player = e.getPlayer();
                 player.openInventory(new VoteInventory(AmongUsPlayer.getPlayer(player.getUniqueId()), game.getCurrentVoteSystem().getCaller()).create());
             }
