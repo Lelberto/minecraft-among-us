@@ -171,7 +171,7 @@ public class VoteInventory extends BaseInventory {
                             AmongUsPlayer auVoted = AmongUsPlayer.getPlayerByColor(color);
                             player.closeInventory();
                             game.getCurrentVoteSystem().vote(auPlayer, auVoted);
-                            player.sendMessage(Plugin.getPluginNameChat() + "Voted for §6" + auVoted.toBukkitPlayer().getName());
+                            Bukkit.broadcastMessage(Plugin.getPluginNameChat() + auPlayer.getColor().code + player.getName() + " §rvoted");
                         }
                     }
                 }
