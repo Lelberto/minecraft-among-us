@@ -147,6 +147,9 @@ public class VoteSystem {
                 Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, SoundCategory.AMBIENT, 1.0F, 1.0F - ((float) this.votingTimeCooldown * 0.1F) + 1.0F));
             }
             if (this.votingTimeCooldown > 0) {
+                if (game.getPlayers().stream().filter(AmongUsPlayer::isAlive).allMatch(this::hasVoted)) {
+                    this.votingTimeCooldown = 1;
+                }
                 game.getVotingBar().setProgress((double) this.votingTimeCooldown / (double) game.getSettings().votingTime);
                 this.votingTimeCooldown--;
             } else {
