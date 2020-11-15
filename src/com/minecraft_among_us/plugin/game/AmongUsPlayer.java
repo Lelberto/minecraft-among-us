@@ -406,10 +406,10 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
     @Override
     public int compareTo(AmongUsPlayer target) {
         if (this.alive && !target.alive) {
-            return 1;
+            return -1;
         }
         if (!this.alive && target.alive) {
-            return -1;
+            return 1;
         }
         return 0;
     }
