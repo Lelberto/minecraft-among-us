@@ -34,7 +34,7 @@ import java.util.UUID;
  *
  * This class is used to manage players in the game.
  */
-public class AmongUsPlayer {
+public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
 
     /**
      * Gets a player by his UUID.
@@ -401,6 +401,17 @@ public class AmongUsPlayer {
      */
     public OfflinePlayer toBukkitPlayer() {
         return Bukkit.getOfflinePlayer(uuid);
+    }
+
+    @Override
+    public int compareTo(AmongUsPlayer target) {
+        if (this.alive && !target.alive) {
+            return 1;
+        }
+        if (!this.alive && target.alive) {
+            return -1;
+        }
+        return 0;
     }
 
 

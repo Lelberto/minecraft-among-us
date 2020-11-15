@@ -42,8 +42,8 @@ public class Vote implements Comparable<Vote> {
     }
 
     @Override
-    public int compareTo(Vote anotherVote) {
-        return this.auVoters.size() - anotherVote.auVoters.size();
+    public int compareTo(Vote target) {
+        return this.auVoters.size() - target.auVoters.size();
     }
 
     @Override

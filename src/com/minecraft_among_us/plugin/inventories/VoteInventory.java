@@ -18,7 +18,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -42,11 +45,13 @@ public class VoteInventory extends BaseInventory {
     @Override
     public Inventory create() {
         Game game = Game.getInstance();
+        List<AmongUsPlayer> auPlayers = new ArrayList<>(game.getPlayers());
+        Collections.sort(auPlayers);
         boolean hasVoted = game.getCurrentVoteSystem().hasVoted(this.auPlayer);
         Inventory inventory = Bukkit.createInventory(null, 54, "Vote");
 
         int i = 0;
-        for (AmongUsPlayer auPlayer : game.getPlayers().stream().filter(AmongUsPlayer::isAlive).collect(Collectors.toList())) {
+        for (AmongUsPlayer auPlayer : auPlayers) {
             Player player = (Player) auPlayer.toBukkitPlayer();
 
             ItemStack colorItem = new ItemStack(auPlayer.getColor().wool);
@@ -69,15 +74,22 @@ public class VoteInventory extends BaseInventory {
             }
             
             ItemStack voteItem;
-            if (hasVoted) {
-                voteItem = new ItemStack(Material.FILLED_MAP);
+            if (auPlayer.isAlive()) {
+                if (hasVoted) {
+                    voteItem = new ItemStack(Material.FILLED_MAP);
+                } else {
+                    voteItem = new ItemStack(Material.PAPER);
+                }
+                ItemMeta voteItemMeta = voteItem.getItemMeta();
+                voteItemMeta.setDisplayName("Vote for this player");
+                voteItemMeta.setLore(Arrays.asList(hasVoted ? "§cYou have already voted" : "§aClick to vote for this player"));
+                voteItem.setItemMeta(voteItemMeta);
             } else {
-                voteItem = new ItemStack(Material.PAPER);
+                voteItem = new ItemStack(Material.BARRIER);
+                ItemMeta voteItemMeta = voteItem.getItemMeta();
+                voteItemMeta.setDisplayName("§cThis player is dead");
+                voteItem.setItemMeta(voteItemMeta);
             }
-            ItemMeta voteItemMeta = voteItem.getItemMeta();
-            voteItemMeta.setDisplayName("Vote for this player");
-            voteItemMeta.setLore(Arrays.asList(hasVoted ? "§cYou have already voted" : "§aClick to vote for this player"));
-            voteItem.setItemMeta(voteItemMeta);
 
             if (auPlayer.equals(this.auCaller)) {
                 ItemStack callerItem = new ItemStack(Material.REDSTONE_TORCH);
@@ -97,7 +109,7 @@ public class VoteInventory extends BaseInventory {
         if (hasVoted) {
             skipItem = new ItemStack(Material.FILLED_MAP);
         } else {
-            skipItem = new ItemStack(Material.BARRIER);
+            skipItem = new ItemStack(Material.TRIPWIRE_HOOK);
         }
         ItemMeta skipItemMeta = skipItem.getItemMeta();
         skipItemMeta.setDisplayName("§7Skip vote");
@@ -162,7 +174,7 @@ public class VoteInventory extends BaseInventory {
                     if (currentItem != null) {
                         Game game = Game.getInstance();
                         Material currentMaterial = currentItem.getType();
-                        if (currentMaterial.equals(Material.BARRIER)) {
+                        if (currentMaterial.equals(Material.TRIPWIRE_HOOK)) {
                             player.closeInventory();
                             game.getCurrentVoteSystem().vote(auPlayer, null);
                             player.sendMessage(Plugin.getPluginNameChat() + "Skipped vote");
