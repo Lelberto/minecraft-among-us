@@ -35,10 +35,46 @@ map:
     - x: 0
       y: 100
       z: 0
+  emergency:
+    - x: 0
+      y: 100
+      z: 0
+    - x: 0
+      y: 100
+      z: 0
+    - x: 0
+      y: 100
+      z: 0
+    - x: 0
+      y: 100
+      z: 0
+    - x: 0
+      y: 100
+      z: 0
+    - x: 0
+      y: 100
+      z: 0
+    - x: 0
+      y: 100
+      z: 0
+    - x: 0
+      y: 100
+      z: 0
+    - x: 0
+      y: 100
+      z: 0
+    - x: 0
+      y: 100
+      z: 0
 computer:
   location:
     x: 0
     y: 100
+    z: 0
+emergency:
+  location:
+    x: 0
+    y: 0
     z: 0
   vents:
     - :

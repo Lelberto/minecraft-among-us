@@ -83,7 +83,7 @@ public class ComputerInventory extends BaseInventory {
     public static class Listener implements org.bukkit.event.Listener {
 
         /**
-         * Event triggered when a player opens the computer's inventory.
+         * Event triggered when a player opens the computer inventory.
          *
          * @param e Event
          */

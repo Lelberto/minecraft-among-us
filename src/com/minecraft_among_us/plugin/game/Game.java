@@ -7,6 +7,7 @@ import com.minecraft_among_us.plugin.tasks.Task;
 import com.minecraft_among_us.plugin.tasks.TaskType;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
@@ -47,7 +48,9 @@ public class Game {
     private GameSettings settings;
     private GameState state;
     private final List<AmongUsPlayer> players;
+    private VoteSystem currentVoteSystem;
     private final BossBar taskBar;
+    private final BossBar votingBar;
     private int startCooldown;
 
     /**
@@ -58,7 +61,8 @@ public class Game {
         this.settings = new GameSettings();
         this.state = GameState.HUB;
         this.players = new ArrayList<>();
-        this.taskBar = Bukkit.createBossBar("Tasks completed", BarColor.GREEN, BarStyle.SEGMENTED_10);
+        this.taskBar = Bukkit.createBossBar("Tasks completed", BarColor.GREEN, BarStyle.SEGMENTED_10, BarFlag.DARKEN_SKY, BarFlag.CREATE_FOG);
+        this.votingBar = Bukkit.createBossBar("Voting time", BarColor.WHITE, BarStyle.SOLID);
         this.startCooldown = 5;
     }
 
@@ -109,6 +113,7 @@ public class Game {
      */
     public void stop() {
         Bukkit.broadcastMessage("game ends");
+        this.taskBar.removeAll();
     }
 
     /**
@@ -212,6 +217,15 @@ public class Game {
     }
 
     /**
+     * Sets the game state.
+     *
+     * @param state Game state to set
+     */
+    public void setState(GameState state) {
+        this.state = state;
+    }
+
+    /**
      * Gets all players in the game.
      *
      * @return Players in the game
@@ -239,12 +253,39 @@ public class Game {
     }
 
     /**
+     * Gets the current vote system.
+     *
+     * @return Current vote system
+     */
+    public VoteSystem getCurrentVoteSystem() {
+        return currentVoteSystem;
+    }
+
+    /**
+     * Sets the current vote system.
+     *
+     * @param currentVoteSystem Current vote system
+     */
+    public void setCurrentVoteSystem(VoteSystem currentVoteSystem) {
+        this.currentVoteSystem = currentVoteSystem;
+    }
+
+    /**
      * Gets the task bar.
      *
      * @return Task bar
      */
     public BossBar getTaskBar() {
         return taskBar;
+    }
+
+    /**
+     * Gets the voting bar.
+     *
+     * @return Voting bar
+     */
+    public BossBar getVotingBar() {
+        return votingBar;
     }
 
     /**
