@@ -37,16 +37,29 @@ import java.util.UUID;
 public class AmongUsPlayer {
 
     /**
-     * Gets a player with an UUID.
+     * Gets a player by his UUID.
      *
      * The player to search must be registered in the game (by joining).
      * A player who quits the game is unregistered.
      *
      * @param uuid UUID
-     * @return Player with the specified UUID
+     * @return Player with the specified UUID, or {@code null} if the player is not registered
      */
     public static AmongUsPlayer getPlayer(UUID uuid) {
         return Game.getInstance().getPlayers().stream().filter(auPlayer -> auPlayer.getUuid().equals(uuid)).findFirst().orElse(null);
+    }
+
+    /**
+     * Gets a player by his color.
+     *
+     * The player to search must be registered in the game (by joining).
+     * A player who quits the game is unregistered.
+     *
+     * @param color Color
+     * @return Player with the specified color, or {@code null} if the color is not used or if the player is not registered
+     */
+    public static AmongUsPlayer getPlayerByColor(Color color) {
+        return Game.getInstance().getPlayers().stream().filter(auPlayer -> auPlayer.getColor().equals(color)).findFirst().orElse(null);
     }
 
     private final UUID uuid;
@@ -138,23 +151,37 @@ public class AmongUsPlayer {
     public void refreshBar() {
         PlayerInventory inventory = ((Player) this.toBukkitPlayer()).getInventory();
 
-        for (int i = 0; i < 9; i++) {
-            ItemStack barItem = new ItemStack(color.dye);
-            ItemMeta barItemMeta = barItem.getItemMeta();
-            if (this.impostor) {
-                switch (i) {
-                    case 0:
-                        barItemMeta.setDisplayName("Sabotage reactor");
-                        break;
-                    default:
-                        barItemMeta.setDisplayName("-");
-                        break;
+        if (Game.getInstance().getState().equals(GameState.VOTE)) {
+            for (int i = 0; i < 9; i++) {
+                if (i == 0) {
+                    ItemStack voteItem = new ItemStack(Material.PAPER);
+                    ItemMeta voteItemMeta = voteItem.getItemMeta();
+                    voteItemMeta.setDisplayName("Vote");
+                    voteItem.setItemMeta(voteItemMeta);
+                    inventory.setItem(i, voteItem);
+                } else {
+                    inventory.setItem(i, null);
                 }
-            } else {
-                barItemMeta.setDisplayName("-");
             }
-            barItem.setItemMeta(barItemMeta);
-            inventory.setItem(i, barItem);
+        } else {
+            for (int i = 0; i < 9; i++) {
+                ItemStack barItem = new ItemStack(color.dye);
+                ItemMeta barItemMeta = barItem.getItemMeta();
+                if (this.impostor) {
+                    switch (i) {
+                        case 0:
+                            barItemMeta.setDisplayName("Sabotage reactor");
+                            break;
+                        default:
+                            barItemMeta.setDisplayName("-");
+                            break;
+                    }
+                } else {
+                    barItemMeta.setDisplayName("-");
+                }
+                barItem.setItemMeta(barItemMeta);
+                inventory.setItem(i, barItem);
+            }
         }
     }
 
@@ -455,8 +482,12 @@ public class AmongUsPlayer {
                 AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(e.getPlayer().getUniqueId());
                 AmongUsPlayer auTarget = AmongUsPlayer.getPlayer(UUID.fromString(e.getRightClicked().getMetadata("dead_body").get(0).asString()));
                 if (auPlayer.isAlive()) {
+                    Game game = Game.getInstance();
                     e.getRightClicked().remove();
-                    new Vote(auPlayer, false).start();
+                    game.checkEndGame();
+                    if (game.getState().equals(GameState.IN_PROGRESS)) {
+                        new VoteSystem(auPlayer, false).start();
+                    }
                 }
             }
         }
@@ -472,7 +503,7 @@ public class AmongUsPlayer {
             Player player = e.getPlayer();
             AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
             if (game.getState().equals(GameState.IN_PROGRESS) && auPlayer.isAlive() && e.getHand().equals(EquipmentSlot.HAND) && e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getClickedBlock().getLocation().equals(ConfigurationManager.getInstance().emergencyLocation)) {
-                new Vote(auPlayer, true).start();
+                new VoteSystem(auPlayer, true).start();
             }
         }
 

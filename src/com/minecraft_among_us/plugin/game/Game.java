@@ -7,6 +7,7 @@ import com.minecraft_among_us.plugin.tasks.Task;
 import com.minecraft_among_us.plugin.tasks.TaskType;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
@@ -47,7 +48,7 @@ public class Game {
     private GameSettings settings;
     private GameState state;
     private final List<AmongUsPlayer> players;
-    private Vote currentVote;
+    private VoteSystem currentVoteSystem;
     private final BossBar taskBar;
     private final BossBar votingBar;
     private int startCooldown;
@@ -60,7 +61,7 @@ public class Game {
         this.settings = new GameSettings();
         this.state = GameState.HUB;
         this.players = new ArrayList<>();
-        this.taskBar = Bukkit.createBossBar("Tasks completed", BarColor.GREEN, BarStyle.SEGMENTED_10);
+        this.taskBar = Bukkit.createBossBar("Tasks completed", BarColor.GREEN, BarStyle.SEGMENTED_10, BarFlag.DARKEN_SKY, BarFlag.CREATE_FOG);
         this.votingBar = Bukkit.createBossBar("Voting time", BarColor.WHITE, BarStyle.SOLID);
         this.startCooldown = 5;
     }
@@ -252,21 +253,21 @@ public class Game {
     }
 
     /**
-     * Gets the current vote.
+     * Gets the current vote system.
      *
-     * @return Current vote
+     * @return Current vote system
      */
-    public Vote getCurrentVote() {
-        return currentVote;
+    public VoteSystem getCurrentVoteSystem() {
+        return currentVoteSystem;
     }
 
     /**
-     * Sets the current vote.
+     * Sets the current vote system.
      *
-     * @param currentVote Current vote
+     * @param currentVoteSystem Current vote system
      */
-    public void setCurrentVote(Vote currentVote) {
-        this.currentVote = currentVote;
+    public void setCurrentVoteSystem(VoteSystem currentVoteSystem) {
+        this.currentVoteSystem = currentVoteSystem;
     }
 
     /**
