@@ -429,6 +429,7 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
         public void onJoin(PlayerJoinEvent e) {
             Player player = e.getPlayer();
             Game game = Game.getInstance();
+            game.getTechnicalTeam().addEntry(player.getName());
             if (game.getState() == GameState.HUB) {
                 e.setJoinMessage("§7[§a+§7]§r §6" + player.getName());
                 player.setGameMode(GameMode.ADVENTURE);
