@@ -69,6 +69,9 @@ public class Plugin extends JavaPlugin {
     public void onEnable() {
         super.onEnable();
 
+        // NMS initialization
+        Nms.init();
+
         // Commands registration
         this.getCommand("game").setExecutor(new GameCommand());
         this.getCommand("test").setExecutor(new TestCommand());
@@ -98,5 +101,7 @@ public class Plugin extends JavaPlugin {
     @Override
     public void onDisable() {
         super.onDisable();
+        // TODO Used for debug only, remove it in production
+        Game.getInstance().getTechnicalTeam().unregister();
     }
 }

@@ -17,6 +17,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Team;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +31,7 @@ public class Game {
 
     public static final int MIN_PLAYERS = 4;
     public static final int MAX_PLAYERS = 10;
+    public static final String TECHNICAL_TTEAM_NAME = "technical_team";
     private static Game INSTANCE;
 
     /**
@@ -49,6 +51,7 @@ public class Game {
     private GameState state;
     private final List<AmongUsPlayer> players;
     private VoteSystem currentVoteSystem;
+    private final Team technicalTeam;
     private final BossBar taskBar;
     private final BossBar votingBar;
     private int startCooldown;
@@ -61,9 +64,23 @@ public class Game {
         this.settings = new GameSettings();
         this.state = GameState.HUB;
         this.players = new ArrayList<>();
+        this.currentVoteSystem = null;
+        this.technicalTeam = this.registerTechnicalTeam();
         this.taskBar = Bukkit.createBossBar("Tasks completed", BarColor.GREEN, BarStyle.SEGMENTED_10, BarFlag.DARKEN_SKY, BarFlag.CREATE_FOG);
         this.votingBar = Bukkit.createBossBar("Voting time", BarColor.WHITE, BarStyle.SOLID);
         this.startCooldown = 5;
+    }
+
+    /**
+     * Registers the technical team.
+     *
+     * @return Technical team
+     */
+    private Team registerTechnicalTeam() {
+        Team team = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(Game.TECHNICAL_TTEAM_NAME);
+        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+        return team;
     }
 
     /**
@@ -113,6 +130,7 @@ public class Game {
      */
     public void stop() {
         Bukkit.broadcastMessage("game ends");
+        this.technicalTeam.unregister();
         this.taskBar.removeAll();
     }
 
@@ -268,6 +286,15 @@ public class Game {
      */
     public void setCurrentVoteSystem(VoteSystem currentVoteSystem) {
         this.currentVoteSystem = currentVoteSystem;
+    }
+
+    /**
+     * Gets the technical team.
+     *
+     * @return Technical team
+     */
+    public Team getTechnicalTeam() {
+        return technicalTeam;
     }
 
     /**

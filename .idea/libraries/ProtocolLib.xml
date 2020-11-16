@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="spigot-1.16.4">
+  <library name="ProtocolLib">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/libs/spigot-1.16.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/ProtocolLib.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
