@@ -4,8 +4,6 @@
       <root url="jar://$PROJECT_DIR$/libs/spigot-1.16.4.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://$PROJECT_DIR$/libs/spigot-1.16.4.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>
