@@ -476,6 +476,7 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
                 AmongUsPlayer auCrewmate = AmongUsPlayer.getPlayer(crewmate.getUniqueId());
                 if (game.getState().equals(GameState.IN_PROGRESS) && auImpostor.isImpostor() && auCrewmate.isCrewmate()) {
                     crewmate.setGameMode(GameMode.SPECTATOR);
+                    crewmate.closeInventory();
                     auCrewmate.setAlive(false);
                     auCrewmate.createDeadBody();
                     game.checkEndGame();
