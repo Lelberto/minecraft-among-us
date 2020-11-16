@@ -176,7 +176,7 @@ public class VoteInventory extends BaseInventory {
                         if (currentMaterial.equals(Material.TRIPWIRE_HOOK)) {
                             player.closeInventory();
                             game.getCurrentVoteSystem().vote(auPlayer, null);
-                            player.sendMessage(Plugin.getPluginNameChat() + "Skipped vote");
+                            Bukkit.broadcastMessage(Plugin.getPluginNameChat() + auPlayer.getColor().code + player.getName() + " §rvoted");
                         } else if (currentMaterial.equals(Material.PAPER)) {
                             Color color = Color.getColorByWool(e.getClickedInventory().getItem(e.getSlot() - 2).getType());
                             AmongUsPlayer auVoted = AmongUsPlayer.getPlayerByColor(color);
