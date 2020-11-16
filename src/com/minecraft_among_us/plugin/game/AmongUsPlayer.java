@@ -474,7 +474,7 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
                 Player crewmate = (Player) e.getEntity();
                 AmongUsPlayer auImpostor = AmongUsPlayer.getPlayer(impostor.getUniqueId());
                 AmongUsPlayer auCrewmate = AmongUsPlayer.getPlayer(crewmate.getUniqueId());
-                if (auImpostor.isImpostor() && auCrewmate.isCrewmate()) {
+                if (game.getState().equals(GameState.IN_PROGRESS) && auImpostor.isImpostor() && auCrewmate.isCrewmate()) {
                     crewmate.setGameMode(GameMode.SPECTATOR);
                     auCrewmate.setAlive(false);
                     auCrewmate.createDeadBody();
@@ -495,7 +495,6 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
                 AmongUsPlayer auTarget = AmongUsPlayer.getPlayer(UUID.fromString(e.getRightClicked().getMetadata("dead_body").get(0).asString()));
                 if (auPlayer.isAlive()) {
                     Game game = Game.getInstance();
-                    e.getRightClicked().remove();
                     if (game.getState().equals(GameState.IN_PROGRESS)) {
                         new VoteSystem(auPlayer, false).start();
                     }

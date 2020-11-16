@@ -4,6 +4,7 @@ import com.minecraft_among_us.plugin.Plugin;
 import com.minecraft_among_us.plugin.config.ConfigurationManager;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -50,6 +51,7 @@ public class VoteSystem {
      */
     public void start() {
         Game game = Game.getInstance();
+        Plugin.getDefaultWorld().getEntities().stream().filter(entity -> entity.hasMetadata("dead_body")).forEach(Entity::remove);
         game.setState(GameState.VOTE_DISCUSSION);
         game.setCurrentVoteSystem(this);
         List<Location> emergencySpawns = ConfigurationManager.getInstance().mapEmergency;
