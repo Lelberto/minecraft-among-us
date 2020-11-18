@@ -478,6 +478,8 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
                     crewmate.setGameMode(GameMode.SPECTATOR);
                     crewmate.closeInventory();
                     auCrewmate.setAlive(false);
+                    auCrewmate.removeBar();
+                    auCrewmate.removeEquipment();
                     auCrewmate.createDeadBody();
                     game.checkEndGame();
                 }

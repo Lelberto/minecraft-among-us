@@ -94,6 +94,8 @@ public class VoteSystem {
             ejected.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, ejected.getLocation(), 100, 0.8, 0.8, 0.8, 0.5);
             ejected.getWorld().spawnParticle(Particle.FLAME, ejected.getLocation(), 1000, 0.3, 0.3, 0.3, 0.1);
             auEjected.setAlive(false);
+            auEjected.removeEquipment();
+            auEjected.removeBar();
             game.checkEndGame();
         }
     }
