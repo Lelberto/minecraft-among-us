@@ -82,7 +82,9 @@ public class Nms {
     }
 
     /**
-     * Blocked constructor.
+     * Private constructor.
+     *
+     * This class can't be instantiated.
      */
     private Nms() {}
 }
