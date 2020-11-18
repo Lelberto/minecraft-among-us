@@ -101,6 +101,11 @@ public class GameSettingsInventory extends BaseInventory {
         recommendedItemMeta.setLore(Arrays.asList("§7Recommended settings for §a" + game.getPlayers().size() + "§7 players"));
         recommendedItem.setItemMeta(recommendedItemMeta);
 
+        ItemStack backItem = new ItemStack(Material.STICK);
+        ItemMeta backItemMeta = backItem.getItemMeta();
+        backItemMeta.setDisplayName("§cBack");
+        backItem.setItemMeta(backItemMeta);
+
         inventory.setItem(0, impostorsItem);
         inventory.setItem(1, confirmEjectsItem);
         inventory.setItem(2, emergencyMeetingsItem);
@@ -111,7 +116,8 @@ public class GameSettingsInventory extends BaseInventory {
         inventory.setItem(7, commonTasksItem);
         inventory.setItem(8, longTasksItem);
         inventory.setItem(9, shortTasksItem);
-        inventory.setItem(26, recommendedItem);
+        inventory.setItem(25, recommendedItem);
+        inventory.setItem(26, backItem);
         return inventory;
     }
 
@@ -226,6 +232,9 @@ public class GameSettingsInventory extends BaseInventory {
                             game.getSettings().recommended(game.getPlayers().size());
                             player.sendMessage(Plugin.getPluginNameChat() + "Recommended settings for §a" + Bukkit.getOnlinePlayers().size() + "§r players");
                             player.closeInventory();
+                        } else if (currentMaterial.equals(Material.STICK)) {
+                            Player player = (Player) e.getWhoClicked();
+                            player.openInventory(new ComputerInventory(AmongUsPlayer.getPlayer(player.getUniqueId())).create());
                         }
                     }
                 }
