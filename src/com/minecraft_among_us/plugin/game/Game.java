@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -469,6 +470,18 @@ public class Game {
         @EventHandler
         public void onDrop(PlayerDropItemEvent e) {
             if (!Game.getInstance().isDevMode()) {
+                e.setCancelled(true);
+            }
+        }
+
+        /**
+         * Event triggered when a player interacts on his inventory.
+         *
+         * @param e Event
+         */
+        @EventHandler
+        public void onPlayerInventoryClick(InventoryClickEvent e) {
+            if (!Game.getInstance().isDevMode() && e.getView().getTitle().equals("Crafting")) {
                 e.setCancelled(true);
             }
         }
