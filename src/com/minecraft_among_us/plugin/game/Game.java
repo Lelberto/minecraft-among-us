@@ -460,5 +460,17 @@ public class Game {
                 e.setCancelled(true);
             }
         }
+
+        /**
+         * Event triggered when a player drops an item.
+         *
+         * @param e Event
+         */
+        @EventHandler
+        public void onDrop(PlayerDropItemEvent e) {
+            if (!Game.getInstance().isDevMode()) {
+                e.setCancelled(true);
+            }
+        }
     }
 }
