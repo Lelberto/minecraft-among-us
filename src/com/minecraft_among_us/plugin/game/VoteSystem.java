@@ -60,7 +60,7 @@ public class VoteSystem {
             Player player = (Player) auPlayer.toBukkitPlayer();
             auPlayer.refreshBar();
             player.teleport(emergencySpawns.get(i++));
-            player.sendTitle(emergency ? "§cEmergency call" : "§cDead body found", (emergency ? "§7Called by" : "§7Founded by") + " §6" + auCaller.toBukkitPlayer().getName(), 5, 80, 15);
+            player.sendTitle(emergency ? "§cEmergency call" : "§cDead body founded", (emergency ? "§7Called by" : "§7Founded by") + " §6" + auCaller.toBukkitPlayer().getName(), 5, 80, 15);
             player.playSound(player.getLocation(), emergency ? Sound.ENTITY_PLAYER_LEVELUP : Sound.ENTITY_ZOMBIE_VILLAGER_CONVERTED, SoundCategory.AMBIENT, 1.0F, 0.0F);
             player.setWalkSpeed(0.0F);
             player.setFoodLevel(6);
