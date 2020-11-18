@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 public enum Color {
     RED(255, 0, 0, "§c", Material.RED_DYE, Material.RED_WOOL),
-    BLUE(0, 0, 255, "§9", Material.BLUE_DYE, Material.BLUE_WOOL),
+    BLUE(60, 60, 255, "§9", Material.BLUE_DYE, Material.BLUE_WOOL),
     GREEN(0, 255, 0, "§2", Material.GREEN_DYE, Material.GREEN_WOOL),
     PINK(255, 150, 255, "§d", Material.PINK_DYE, Material.PINK_WOOL),
     ORANGE(255, 125, 0, "§6", Material.ORANGE_DYE, Material.ORANGE_WOOL),
@@ -19,7 +19,7 @@ public enum Color {
     PURPLE(150, 0, 150, "§5", Material.PURPLE_DYE, Material.PURPLE_WOOL),
     BROWN(130, 50, 0, "§7", Material.BROWN_DYE, Material.BROWN_WOOL),
     CYAN(30, 200, 200, "§b", Material.CYAN_DYE, Material.CYAN_WOOL),
-    LIME(100, 230, 50, "§a", Material.LIME_DYE, Material.LIME_WOOL);
+    LIME(120, 230, 50, "§a", Material.LIME_DYE, Material.LIME_WOOL);
 
     /**
      * Gets a color by it's wool.
