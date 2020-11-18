@@ -448,5 +448,17 @@ public class Game {
                 e.setCancelled(true);
             }
         }
+
+        /**
+         * Event triggered when a player swaps items in hand.
+         *
+         * @param e Event
+         */
+        @EventHandler
+        public void onSwapHand(PlayerSwapHandItemsEvent e) {
+            if (!Game.getInstance().isDevMode()) {
+                e.setCancelled(true);
+            }
+        }
     }
 }
