@@ -1,9 +1,11 @@
 package com.minecraft_among_us.plugin.inventories;
 
+import com.minecraft_among_us.plugin.Plugin;
 import com.minecraft_among_us.plugin.game.AmongUsPlayer;
 import com.minecraft_among_us.plugin.game.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -220,8 +222,10 @@ public class GameSettingsInventory extends BaseInventory {
                             currentItemItemMeta.setLore(Arrays.asList("§7Number of short tasks : §a" + game.getSettings().shortTasks));
                             currentItem.setItemMeta(currentItemItemMeta);
                         } else if (currentMaterial.equals(Material.SEA_LANTERN)) {
+                            Player player = (Player) e.getWhoClicked();
                             game.getSettings().recommended(game.getPlayers().size());
-                            e.getWhoClicked().closeInventory();
+                            player.sendMessage(Plugin.getPluginNameChat() + "Recommended settings for §a" + Bukkit.getOnlinePlayers().size() + "§r players");
+                            player.closeInventory();
                         }
                     }
                 }
