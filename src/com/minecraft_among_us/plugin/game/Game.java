@@ -432,6 +432,18 @@ public class Game {
          * @param e Event
          */
         @EventHandler
+        public void onItemFrameChange(PlayerInteractEntityEvent e) {
+            if (!Game.getInstance().isDevMode()) {
+                e.setCancelled(true);
+            }
+        }
+
+        /**
+         * Event triggered when a player interacts at an entity.
+         *
+         * @param e Event
+         */
+        @EventHandler
         public void onDamage(PlayerInteractAtEntityEvent e) {
             if (!Game.getInstance().isDevMode()) {
                 e.setCancelled(true);
