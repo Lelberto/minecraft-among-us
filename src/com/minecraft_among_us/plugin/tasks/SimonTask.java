@@ -4,10 +4,12 @@ import com.minecraft_among_us.plugin.game.AmongUsPlayer;
 import com.minecraft_among_us.plugin.Plugin;
 import com.minecraft_among_us.plugin.config.TaskSettings;
 import com.minecraft_among_us.plugin.game.Game;
+import com.minecraft_among_us.plugin.game.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -226,13 +228,17 @@ public class SimonTask extends Task {
         @EventHandler
         public void onClick(InventoryClickEvent e) {
             TaskSettings settings = Game.getInstance().getTaskSettings(ID);
-            if (e.getView().getTitle().equals(settings.name)) {
+            if (e.getView().getTitle().equals(settings.name) && e.getAction().equals(InventoryAction.PICKUP_ALL)) {
                 e.setCancelled(true);
                 AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(e.getWhoClicked().getUniqueId());
-                ItemStack currentItem = e.getCurrentItem();
-                if (currentItem != null) {
-                    SimonTask task = (SimonTask) auPlayer.getTask(settings.name);
-                    task.playerPlay(e.getClickedInventory(), e.getSlot());
+                if (Game.getInstance().getState().equals(GameState.IN_PROGRESS)) {
+                    ItemStack currentItem = e.getCurrentItem();
+                    if (currentItem != null) {
+                        SimonTask task = (SimonTask) auPlayer.getTask(settings.name);
+                        task.playerPlay(e.getClickedInventory(), e.getSlot());
+                    }
+                } else {
+                    ((Player) auPlayer.toBukkitPlayer()).sendMessage(Plugin.getPluginNameChat() + "§cCan't doing tasks when a vote is in progress");
                 }
             }
         }

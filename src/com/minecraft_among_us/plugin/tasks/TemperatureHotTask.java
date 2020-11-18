@@ -1,8 +1,10 @@
 package com.minecraft_among_us.plugin.tasks;
 
+import com.minecraft_among_us.plugin.Plugin;
 import com.minecraft_among_us.plugin.game.AmongUsPlayer;
 import com.minecraft_among_us.plugin.config.TaskSettings;
 import com.minecraft_among_us.plugin.game.Game;
+import com.minecraft_among_us.plugin.game.GameState;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -62,11 +64,10 @@ public class TemperatureHotTask extends TemperatureTask {
         @EventHandler
         public void onClick(InventoryClickEvent e) {
             TaskSettings settings = Game.getInstance().getTaskSettings(ID);
-            if (e.getView().getTitle().equals(settings.name)) {
+            if (e.getView().getTitle().equals(settings.name) && e.getAction().equals(InventoryAction.PICKUP_ALL)) {
                 e.setCancelled(true);
-                if (e.getAction().equals(InventoryAction.PICKUP_ALL)) {
-                    Player player = (Player) e.getWhoClicked();
-                    AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
+                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(e.getWhoClicked().getUniqueId());
+                if (Game.getInstance().getState().equals(GameState.IN_PROGRESS)) {
                     ItemStack currentItem = e.getCurrentItem();
                     if (currentItem != null) {
                         TemperatureHotTask task = (TemperatureHotTask) auPlayer.getTask(settings.name);
@@ -77,6 +78,8 @@ public class TemperatureHotTask extends TemperatureTask {
                             task.change(false);
                         }
                     }
+                } else {
+                    ((Player) auPlayer.toBukkitPlayer()).sendMessage(Plugin.getPluginNameChat() + "§cCan't doing tasks when a vote is in progress");
                 }
             }
         }
