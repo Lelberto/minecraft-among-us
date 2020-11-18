@@ -191,11 +191,15 @@ public class Game {
         List<Task> allTasks = this.getAllTasks().stream().filter(currentTask -> !currentTask.isFake()).collect(Collectors.toList());
         List<Task> finishedTasks = allTasks.stream().filter(Task::isFinished).collect(Collectors.toList());
         this.getTaskBar().setProgress((double) finishedTasks.size() / (double) allTasks.size());
-        if (this.getCrewmates().size() == this.getImpostors().size()) {
+        if (this.getImpostors().size() == 0) {
+            // TODO Crewmates wins
+            this.stop();
+        } else if (this.getCrewmates().size() == this.getImpostors().size()) {
             // TODO Impostors wins
             this.stop();
         } else if (allTasks.stream().filter(currentTask -> !currentTask.isFake()).count() == finishedTasks.size()) {
             // TODO Crewmates wins
+            this.stop();
         }
     }
 
