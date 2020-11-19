@@ -479,6 +479,26 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
         }
 
         /**
+         * Event triggered when a player chats.
+         *
+         * @param e Event
+         */
+        @EventHandler
+        public void onChat(AsyncPlayerChatEvent e) {
+            Game game = Game.getInstance();
+            Player player = e.getPlayer();
+            AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
+            if (!auPlayer.isAlive()) {
+                e.setCancelled(true);
+                game.getPlayers().stream().filter(currentAuPlayer -> !currentAuPlayer.isAlive()).forEach(currentAuPlayer -> ((Player) currentAuPlayer.toBukkitPlayer()).sendMessage("§4✖ " + auPlayer.getColor().code + "§m" + player.getName() + "§f: " + e.getMessage()));
+            } else if (!game.getState().equals(GameState.IN_PROGRESS)) {
+                e.setFormat(auPlayer.getColor().code + player.getName() + "§f: " + e.getMessage());
+            } else {
+                e.setCancelled(true);
+            }
+        }
+
+        /**
          * Event triggered when an impostor kills a crewmate.
          *
          * @param e Event
