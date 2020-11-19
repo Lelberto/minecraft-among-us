@@ -194,6 +194,7 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
         Player player = (Player) this.toBukkitPlayer();
 
         if (this.alive && GameState.isVote(Game.getInstance().getState())) {
+            player.setInvisible(false);
             player.setWalkSpeed(0.0F);
             player.setFoodLevel(6);
             player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 999999, 200, false, false, false));
@@ -376,15 +377,6 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
     }
 
     /**
-     * Sets the current vent group the player is in.
-     *
-     * @param currentVentGroup Current vent group
-     */
-    public void setCurrentVentGroup(List<Location> currentVentGroup) {
-        this.currentVentGroup = currentVentGroup;
-    }
-
-    /**
      * Gets the current vent the player is in.
      *
      * @return Current vent the player is in
@@ -395,6 +387,22 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
 
     /**
      * Sets the current vent the player is in.
+     * 
+     * If the new vent is in the same current vent group, call {@link AmongUsPlayer#setCurrentVent(Location)}.
+     * The vent group parameter can be an empty array to reset the vent group.
+     *
+     * @param currentVent Current vent
+     * @param currentVentGroup Current vent group
+     */
+    public void setCurrentVent(Location currentVent, List<Location> currentVentGroup) {
+        this.currentVent = currentVent;
+        this.currentVentGroup = currentVentGroup;
+    }
+
+    /**
+     * Sets the current vent the player is in.
+     * 
+     * The new vent must be in the current vent group. If not the case, call {@link AmongUsPlayer#setCurrentVent(Location, List)}
      *
      * @param currentVent Current vent
      */
@@ -408,7 +416,7 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
      * @return True if the player is in vent, false otherwise
      */
     public boolean isInVent() {
-        return !currentVentGroup.isEmpty();
+        return this.currentVent != null;
     }
 
     /**
@@ -550,11 +558,9 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
                 Block vent = e.getClickedBlock();
                 Location ventLocation = vent.getLocation();
                 if (auPlayer.isInVent()) {
-                    auPlayer.setCurrentVentGroup(new ArrayList<>());
-                    auPlayer.setCurrentVent(null);
+                    auPlayer.setCurrentVent(null, new ArrayList<>());
                 } else {
-                    auPlayer.setCurrentVentGroup(Game.getInstance().getVentgroup(ventLocation));
-                    auPlayer.setCurrentVent(ventLocation);
+                    auPlayer.setCurrentVent(ventLocation, Game.getInstance().getVentgroup(ventLocation));
                     player.teleport(ventLocation.clone().add(new Vector(0.5, 0.1, 0.5)));
                 }
                 auPlayer.refresh();

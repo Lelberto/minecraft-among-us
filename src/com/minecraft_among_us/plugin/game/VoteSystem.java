@@ -58,7 +58,7 @@ public class VoteSystem {
             player.teleport(emergencySpawns.get(i++));
             player.sendTitle(emergency ? "§cEmergency call" : "§cDead body founded", (emergency ? "§7Called by" : "§7Founded by") + " §6" + auCaller.toBukkitPlayer().getName(), 5, 80, 15);
             player.playSound(player.getLocation(), emergency ? Sound.ENTITY_PLAYER_LEVELUP : Sound.ENTITY_ZOMBIE_VILLAGER_CONVERTED, SoundCategory.AMBIENT, 1.0F, 0.0F);
-            auPlayer.setCurrentVent(null);
+            auPlayer.setCurrentVent(null, new ArrayList<>());
             auPlayer.refresh();
         }
         this.startDiscussionTime();
