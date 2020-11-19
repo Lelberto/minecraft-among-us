@@ -6,11 +6,8 @@ import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Vote system class.
@@ -61,12 +58,8 @@ public class VoteSystem {
             player.teleport(emergencySpawns.get(i++));
             player.sendTitle(emergency ? "§cEmergency call" : "§cDead body founded", (emergency ? "§7Called by" : "§7Founded by") + " §6" + auCaller.toBukkitPlayer().getName(), 5, 80, 15);
             player.playSound(player.getLocation(), emergency ? Sound.ENTITY_PLAYER_LEVELUP : Sound.ENTITY_ZOMBIE_VILLAGER_CONVERTED, SoundCategory.AMBIENT, 1.0F, 0.0F);
-            if (auPlayer.isAlive()) {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 999999, 200, false, false, false));
-                player.setWalkSpeed(0.0F);
-                player.setFoodLevel(6);
-                auPlayer.refreshBar();
-            }
+            auPlayer.setCurrentVent(null);
+            auPlayer.refresh();
         }
         this.startDiscussionTime();
     }
@@ -84,14 +77,10 @@ public class VoteSystem {
         game.getPlayers().forEach(auPlayer -> {
             Player player = (Player) auPlayer.toBukkitPlayer();
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, SoundCategory.AMBIENT, 1.0F, 1.0F);
-            if (auPlayer.isAlive()) {
-                player.setWalkSpeed(0.2F);
-                player.setFoodLevel(20);
-                player.removePotionEffect(PotionEffectType.JUMP);
-                auPlayer.refreshBar();
-            } else {
+            if (!auPlayer.isAlive()) {
                 player.teleport(mapEmergency.get(rand.nextInt(mapEmergency.size())));
             }
+            auPlayer.refresh();
         });
 
         AmongUsPlayer auEjected = this.getResult();
@@ -102,8 +91,7 @@ public class VoteSystem {
             ejected.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, ejected.getLocation(), 100, 0.8, 0.8, 0.8, 0.5);
             ejected.getWorld().spawnParticle(Particle.FLAME, ejected.getLocation(), 1000, 0.3, 0.3, 0.3, 0.1);
             auEjected.setAlive(false);
-            auEjected.removeEquipment();
-            auEjected.removeBar();
+            auEjected.refresh();
             game.checkEndGame();
         }
     }

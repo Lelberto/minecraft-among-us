@@ -79,6 +79,7 @@ public class Game {
      */
     private Team registerTechnicalTeam() {
         Team team = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(Game.TECHNICAL_TTEAM_NAME);
+        team.setCanSeeFriendlyInvisibles(false);
         team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
         team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
         return team;
@@ -107,6 +108,7 @@ public class Game {
                                 auPlayer.isCrewmate() ? "§bCrewmate" : "§4Impostor",
                                 auPlayer.isCrewmate() ? "§7Finish your tasks or find impostor(s)" : "§7Kill crewmates without showing you",
                                 20, 60, 20);
+                        auPlayer.refresh();
                         this.taskBar.addPlayer(player);
                     });
 

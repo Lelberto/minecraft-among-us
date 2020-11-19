@@ -95,13 +95,13 @@ public class HatInventory extends BaseInventory {
                         Material currentMaterial = currentItem.getType();
                         if (currentMaterial.equals(Material.BARRIER)) {
                             auPlayer.setHat(null);
-                            auPlayer.refreshEquipment();
+                            auPlayer.refresh();
                             player.closeInventory();
                         } else if (currentMaterial.equals(Material.STICK)) {
                             player.openInventory(new ComputerInventory(auPlayer).create());
                         } else {
                             auPlayer.setHat(currentItem);
-                            auPlayer.refreshEquipment();
+                            auPlayer.refresh();
                             player.closeInventory();
                         }
                     }
