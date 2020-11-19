@@ -173,11 +173,11 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
                             barItemMeta.setDisplayName("Sabotage reactor");
                             break;
                         default:
-                            barItemMeta.setDisplayName("-");
+                            barItemMeta.setDisplayName("§f");
                             break;
                     }
                 } else {
-                    barItemMeta.setDisplayName("-");
+                    barItemMeta.setDisplayName("§f");
                 }
                 barItem.setItemMeta(barItemMeta);
                 inventory.setItem(i, barItem);

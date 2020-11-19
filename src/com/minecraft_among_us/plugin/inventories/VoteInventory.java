@@ -108,7 +108,7 @@ public class VoteInventory extends BaseInventory {
         if (hasVoted) {
             skipItem = new ItemStack(Material.FILLED_MAP);
         } else {
-            skipItem = new ItemStack(Material.TRIPWIRE_HOOK);
+            skipItem = new ItemStack(Material.PAPER);
         }
         ItemMeta skipItemMeta = skipItem.getItemMeta();
         skipItemMeta.setDisplayName("§7Skip vote");
@@ -118,7 +118,7 @@ public class VoteInventory extends BaseInventory {
 
         ItemStack separatorItem = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
         ItemMeta separatorItemMeta = separatorItem.getItemMeta();
-        separatorItemMeta.setDisplayName("-");
+        separatorItemMeta.setDisplayName("§f");
         separatorItem.setItemMeta(separatorItemMeta);
         inventory.setItem(4, separatorItem);
         inventory.setItem(13, separatorItem);
@@ -173,11 +173,7 @@ public class VoteInventory extends BaseInventory {
                     if (currentItem != null) {
                         Game game = Game.getInstance();
                         Material currentMaterial = currentItem.getType();
-                        if (currentMaterial.equals(Material.TRIPWIRE_HOOK)) {
-                            player.closeInventory();
-                            game.getCurrentVoteSystem().vote(auPlayer, null);
-                            Bukkit.broadcastMessage(Plugin.getPluginNameChat() + auPlayer.getColor().code + player.getName() + " §rvoted");
-                        } else if (currentMaterial.equals(Material.PAPER)) {
+                        if (currentMaterial.equals(Material.PAPER)) {
                             Color color = Color.getColorByWool(e.getClickedInventory().getItem(e.getSlot() - 2).getType());
                             AmongUsPlayer auVoted = AmongUsPlayer.getPlayerByColor(color);
                             player.closeInventory();
