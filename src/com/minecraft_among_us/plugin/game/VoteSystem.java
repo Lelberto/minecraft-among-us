@@ -4,12 +4,10 @@ import com.minecraft_among_us.plugin.Plugin;
 import com.minecraft_among_us.plugin.config.ConfigurationManager;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Vote system class.
@@ -50,19 +48,18 @@ public class VoteSystem {
      */
     public void start() {
         Game game = Game.getInstance();
+        Plugin.getDefaultWorld().getEntities().stream().filter(entity -> entity.hasMetadata("dead_body")).forEach(Entity::remove);
         game.setState(GameState.VOTE_DISCUSSION);
         game.setCurrentVoteSystem(this);
         List<Location> emergencySpawns = ConfigurationManager.getInstance().mapEmergency;
         int i = 0;
-        for (AmongUsPlayer auPlayer : game.getPlayers().stream().filter(AmongUsPlayer::isAlive).collect(Collectors.toList())) {
+        for (AmongUsPlayer auPlayer : game.getPlayers()) {
             Player player = (Player) auPlayer.toBukkitPlayer();
-            auPlayer.refreshBar();
             player.teleport(emergencySpawns.get(i++));
-            player.sendTitle(emergency ? "§cEmergency call" : "§cDead body found", (emergency ? "§7Called by" : "§7Founded by") + " §6" + auCaller.toBukkitPlayer().getName(), 5, 80, 15);
+            player.sendTitle(emergency ? "§cEmergency call" : "§cDead body founded", (emergency ? "§7Called by" : "§7Founded by") + " §6" + auCaller.toBukkitPlayer().getName(), 5, 80, 15);
             player.playSound(player.getLocation(), emergency ? Sound.ENTITY_PLAYER_LEVELUP : Sound.ENTITY_ZOMBIE_VILLAGER_CONVERTED, SoundCategory.AMBIENT, 1.0F, 0.0F);
-            player.setWalkSpeed(0.0F);
-            player.setFoodLevel(6);
-            player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 999999, 200, false, false, false));
+            auPlayer.setCurrentVent(null, new ArrayList<>());
+            auPlayer.refresh();
         }
         this.startDiscussionTime();
     }
@@ -72,16 +69,18 @@ public class VoteSystem {
      */
     public void stop() {
         Game game = Game.getInstance();
+        Random rand = new Random();
+        List<Location> mapEmergency = ConfigurationManager.getInstance().mapEmergency;
         game.setState(GameState.IN_PROGRESS);
         game.setCurrentVoteSystem(null);
         game.getVotingBar().removeAll();
-        game.getPlayers().stream().filter(AmongUsPlayer::isAlive).forEach(auPlayer -> {
+        game.getPlayers().forEach(auPlayer -> {
             Player player = (Player) auPlayer.toBukkitPlayer();
-            auPlayer.refreshBar();
-            player.setWalkSpeed(0.2F);
-            player.setFoodLevel(20);
-            player.removePotionEffect(PotionEffectType.JUMP);
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, SoundCategory.AMBIENT, 1.0F, 1.0F);
+            if (!auPlayer.isAlive()) {
+                player.teleport(mapEmergency.get(rand.nextInt(mapEmergency.size())));
+            }
+            auPlayer.refresh();
         });
 
         AmongUsPlayer auEjected = this.getResult();
@@ -92,6 +91,7 @@ public class VoteSystem {
             ejected.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, ejected.getLocation(), 100, 0.8, 0.8, 0.8, 0.5);
             ejected.getWorld().spawnParticle(Particle.FLAME, ejected.getLocation(), 1000, 0.3, 0.3, 0.3, 0.1);
             auEjected.setAlive(false);
+            auEjected.refresh();
             game.checkEndGame();
         }
     }

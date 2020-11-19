@@ -114,8 +114,7 @@ public class ColorInventory extends BaseInventory {
                         } else if (currentMaterial.equals(Material.STICK)) {
                             player.openInventory(new ComputerInventory(auPlayer).create());
                         }
-                        auPlayer.refreshEquipment();
-                        auPlayer.refreshBar();
+                        auPlayer.refresh();
                     }
                 }
             }

@@ -86,112 +86,130 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
         this.tasks = new ArrayList<>();
         this.currentVentGroup = new ArrayList<>();
         this.currentVent = null;
-        this.refreshAll();
+        this.refresh();
     }
 
     /**
-     * Refreshes all of the inventory (equipment and hotbar)
+     * Refreshes the player (equipment, hotbar, attributes)
      */
-    public void refreshAll() {
+    public void refresh() {
         this.refreshEquipment();
-        this.refreshBar();
+        this.refreshHotbar();
+        this.refreshAttributes();
     }
 
     /**
      * Refreshes the equipment.
      */
-    public void refreshEquipment() {
+    private void refreshEquipment() {
         PlayerInventory inventory = ((Player) this.toBukkitPlayer()).getInventory();
 
-        ItemStack helmetItem;
-        if (this.hat == null) {
-            helmetItem = new ItemStack(Material.LEATHER_HELMET);
-            LeatherArmorMeta helmetItemMeta = (LeatherArmorMeta) helmetItem.getItemMeta();
-            helmetItemMeta.setColor(org.bukkit.Color.fromRGB(color.red, color.green, color.blue));
-            helmetItem.setItemMeta(helmetItemMeta);
+        if (!this.alive || this.isInVent()) {
+            inventory.setHelmet(null);
+            inventory.setChestplate(null);
+            inventory.setLeggings(null);
+            inventory.setBoots(null);
         } else {
-            helmetItem = this.hat.clone();
+            ItemStack helmetItem;
+            if (this.hat == null) {
+                helmetItem = new ItemStack(Material.LEATHER_HELMET);
+                LeatherArmorMeta helmetItemMeta = (LeatherArmorMeta) helmetItem.getItemMeta();
+                helmetItemMeta.setColor(org.bukkit.Color.fromRGB(color.red, color.green, color.blue));
+                helmetItem.setItemMeta(helmetItemMeta);
+            } else {
+                helmetItem = this.hat.clone();
+            }
+            inventory.setHelmet(helmetItem);
+
+            ItemStack chestplateItem = new ItemStack(Material.LEATHER_CHESTPLATE);
+            LeatherArmorMeta chestplateItemMeta = (LeatherArmorMeta) chestplateItem.getItemMeta();
+            chestplateItemMeta.setColor(org.bukkit.Color.fromRGB(color.red, color.green, color.blue));
+            chestplateItem.setItemMeta(chestplateItemMeta);
+            inventory.setChestplate(chestplateItem);
+
+            ItemStack leggingsItem = new ItemStack(Material.LEATHER_LEGGINGS);
+            LeatherArmorMeta leggingsItemMeta = (LeatherArmorMeta) leggingsItem.getItemMeta();
+            leggingsItemMeta.setColor(org.bukkit.Color.fromRGB(color.red, color.green, color.blue));
+            leggingsItem.setItemMeta(leggingsItemMeta);
+            inventory.setLeggings(leggingsItem);
+
+            ItemStack bootsItem = new ItemStack(Material.LEATHER_BOOTS);
+            LeatherArmorMeta bootsItemMeta = (LeatherArmorMeta) bootsItem.getItemMeta();
+            bootsItemMeta.setColor(org.bukkit.Color.fromRGB(color.red, color.green, color.blue));
+            bootsItem.setItemMeta(bootsItemMeta);
+            inventory.setBoots(bootsItem);
         }
-
-        ItemStack chestplateItem = new ItemStack(Material.LEATHER_CHESTPLATE);
-        LeatherArmorMeta chestplateItemMeta = (LeatherArmorMeta) chestplateItem.getItemMeta();
-        chestplateItemMeta.setColor(org.bukkit.Color.fromRGB(color.red, color.green, color.blue));
-        chestplateItem.setItemMeta(chestplateItemMeta);
-
-        ItemStack leggingsItem = new ItemStack(Material.LEATHER_LEGGINGS);
-        LeatherArmorMeta leggingsItemMeta = (LeatherArmorMeta) leggingsItem.getItemMeta();
-        leggingsItemMeta.setColor(org.bukkit.Color.fromRGB(color.red, color.green, color.blue));
-        leggingsItem.setItemMeta(leggingsItemMeta);
-
-        ItemStack bootsItem = new ItemStack(Material.LEATHER_BOOTS);
-        LeatherArmorMeta bootsItemMeta = (LeatherArmorMeta) bootsItem.getItemMeta();
-        bootsItemMeta.setColor(org.bukkit.Color.fromRGB(color.red, color.green, color.blue));
-        bootsItem.setItemMeta(bootsItemMeta);
-
-        inventory.setHelmet(helmetItem);
-        inventory.setChestplate(chestplateItem);
-        inventory.setLeggings(leggingsItem);
-        inventory.setBoots(bootsItem);
-    }
-
-    /**
-     * Removes the equipment.
-     */
-    public void removeEquipment() {
-        PlayerInventory inventory = ((Player) this.toBukkitPlayer()).getInventory();
-        inventory.setHelmet(null);
-        inventory.setChestplate(null);
-        inventory.setLeggings(null);
-        inventory.setBoots(null);
     }
 
     /**
      * Refreshes the hotbar.
      */
-    public void refreshBar() {
+    private void refreshHotbar() {
         PlayerInventory inventory = ((Player) this.toBukkitPlayer()).getInventory();
 
-        if (GameState.isVote(Game.getInstance().getState())) {
-            for (int i = 0; i < 9; i++) {
-                if (i == 0) {
-                    ItemStack voteItem = new ItemStack(Material.PAPER);
-                    ItemMeta voteItemMeta = voteItem.getItemMeta();
-                    voteItemMeta.setDisplayName("Vote");
-                    voteItem.setItemMeta(voteItemMeta);
-                    inventory.setItem(i, voteItem);
-                } else {
-                    inventory.setItem(i, null);
-                }
-            }
-        } else {
-            for (int i = 0; i < 9; i++) {
-                ItemStack barItem = new ItemStack(color.dye);
-                ItemMeta barItemMeta = barItem.getItemMeta();
-                if (this.impostor) {
-                    switch (i) {
-                        case 0:
-                            barItemMeta.setDisplayName("Sabotage reactor");
-                            break;
-                        default:
-                            barItemMeta.setDisplayName("-");
-                            break;
+        for (int i = 0; i < 9; i++) {
+            if (!this.alive) {
+                inventory.setItem(i, null);
+            } else {
+                if (GameState.isVote(Game.getInstance().getState())) {
+                    if (i == 0) {
+                        ItemStack voteItem = new ItemStack(Material.PAPER);
+                        ItemMeta voteItemMeta = voteItem.getItemMeta();
+                        voteItemMeta.setDisplayName("Vote");
+                        voteItem.setItemMeta(voteItemMeta);
+                        inventory.setItem(i, voteItem);
+                    } else {
+                        inventory.setItem(i, null);
                     }
                 } else {
-                    barItemMeta.setDisplayName("-");
+                    if (this.isInVent()) {
+                        inventory.setItem(i, null);
+                    } else {
+                        ItemStack slotItem = new ItemStack(color.dye);
+                        ItemMeta slotItemMeta = slotItem.getItemMeta();
+                        if (this.impostor) {
+                            switch (i) {
+                                case 0:
+                                    slotItemMeta.setDisplayName("Sabotage reactor");
+                                    break;
+                                default:
+                                    slotItemMeta.setDisplayName("§f");
+                                    break;
+                            }
+                        } else {
+                            slotItemMeta.setDisplayName("§f");
+                        }
+                        slotItem.setItemMeta(slotItemMeta);
+                        inventory.setItem(i, slotItem);
+                    }
                 }
-                barItem.setItemMeta(barItemMeta);
-                inventory.setItem(i, barItem);
             }
         }
     }
 
     /**
-     * Removes the hotbar.
+     * Refreshes attributes (potion effects, speed, etc...)
      */
-    public void removeBar() {
-        PlayerInventory inventory = ((Player) this.toBukkitPlayer()).getInventory();
-        for (int i = 0; i < 9; i++) {
-            inventory.setItem(i, null);
+    private void refreshAttributes() {
+        Player player = (Player) this.toBukkitPlayer();
+
+        if (this.alive && GameState.isVote(Game.getInstance().getState())) {
+            player.setInvisible(false);
+            player.setWalkSpeed(0.0F);
+            player.setFoodLevel(6);
+            player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 999999, 200, false, false, false));
+        } else {
+            if (this.isInVent()) {
+                player.setInvisible(true);
+                player.setWalkSpeed(0.0F);
+                player.setFoodLevel(6);
+                player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 999999, 200, false, false, false));
+            } else {
+                player.setInvisible(false);
+                player.setWalkSpeed(0.2F);
+                player.setFoodLevel(20);
+                player.removePotionEffect(PotionEffectType.JUMP);
+            }
         }
     }
 
@@ -359,15 +377,6 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
     }
 
     /**
-     * Sets the current vent group the player is in.
-     *
-     * @param currentVentGroup Current vent group
-     */
-    public void setCurrentVentGroup(List<Location> currentVentGroup) {
-        this.currentVentGroup = currentVentGroup;
-    }
-
-    /**
      * Gets the current vent the player is in.
      *
      * @return Current vent the player is in
@@ -378,6 +387,22 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
 
     /**
      * Sets the current vent the player is in.
+     * 
+     * If the new vent is in the same current vent group, call {@link AmongUsPlayer#setCurrentVent(Location)}.
+     * The vent group parameter can be an empty array to reset the vent group.
+     *
+     * @param currentVent Current vent
+     * @param currentVentGroup Current vent group
+     */
+    public void setCurrentVent(Location currentVent, List<Location> currentVentGroup) {
+        this.currentVent = currentVent;
+        this.currentVentGroup = currentVentGroup;
+    }
+
+    /**
+     * Sets the current vent the player is in.
+     * 
+     * The new vent must be in the current vent group. If not the case, call {@link AmongUsPlayer#setCurrentVent(Location, List)}
      *
      * @param currentVent Current vent
      */
@@ -391,7 +416,7 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
      * @return True if the player is in vent, false otherwise
      */
     public boolean isInVent() {
-        return !currentVentGroup.isEmpty();
+        return this.currentVent != null;
     }
 
     /**
@@ -474,10 +499,14 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
                 Player crewmate = (Player) e.getEntity();
                 AmongUsPlayer auImpostor = AmongUsPlayer.getPlayer(impostor.getUniqueId());
                 AmongUsPlayer auCrewmate = AmongUsPlayer.getPlayer(crewmate.getUniqueId());
-                if (auImpostor.isImpostor() && auCrewmate.isCrewmate()) {
+                if (game.getState().equals(GameState.IN_PROGRESS) && auImpostor.isImpostor() && auCrewmate.isCrewmate()) {
                     crewmate.setGameMode(GameMode.SPECTATOR);
+                    if (!crewmate.getOpenInventory().getTitle().equals("Crafting")) {
+                        crewmate.closeInventory();
+                    }
                     auCrewmate.setAlive(false);
                     auCrewmate.createDeadBody();
+                    auCrewmate.refresh();
                     game.checkEndGame();
                 }
             }
@@ -492,10 +521,8 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
         public void onDiscoverDeadBody(PlayerInteractAtEntityEvent e) {
             if (e.getHand().equals(EquipmentSlot.HAND) && e.getRightClicked().hasMetadata("dead_body")) {
                 AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(e.getPlayer().getUniqueId());
-                AmongUsPlayer auTarget = AmongUsPlayer.getPlayer(UUID.fromString(e.getRightClicked().getMetadata("dead_body").get(0).asString()));
                 if (auPlayer.isAlive()) {
                     Game game = Game.getInstance();
-                    e.getRightClicked().remove();
                     if (game.getState().equals(GameState.IN_PROGRESS)) {
                         new VoteSystem(auPlayer, false).start();
                     }
@@ -531,25 +558,12 @@ public class AmongUsPlayer implements Comparable<AmongUsPlayer> {
                 Block vent = e.getClickedBlock();
                 Location ventLocation = vent.getLocation();
                 if (auPlayer.isInVent()) {
-                    auPlayer.setCurrentVentGroup(new ArrayList<>());
-                    auPlayer.setCurrentVent(null);
-                    auPlayer.refreshEquipment();
-                    auPlayer.refreshBar();
-                    player.setInvisible(false);
-                    player.setWalkSpeed(0.2F);
-                    player.setFoodLevel(20);
-                    player.removePotionEffect(PotionEffectType.JUMP);
+                    auPlayer.setCurrentVent(null, new ArrayList<>());
                 } else {
-                    auPlayer.setCurrentVentGroup(Game.getInstance().getVentgroup(ventLocation));
-                    auPlayer.setCurrentVent(ventLocation);
-                    auPlayer.removeEquipment();
-                    auPlayer.removeBar();
-                    player.setInvisible(true);
-                    player.setWalkSpeed(0.0F);
-                    player.setFoodLevel(6);
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 999999, 200, false, false, false));
+                    auPlayer.setCurrentVent(ventLocation, Game.getInstance().getVentgroup(ventLocation));
                     player.teleport(ventLocation.clone().add(new Vector(0.5, 0.1, 0.5)));
                 }
+                auPlayer.refresh();
                 if (vent.getBlockData() instanceof Openable) {
                     Openable data = (Openable) vent.getBlockData();
                     data.setOpen(true);

@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -226,7 +227,7 @@ public class SimonTask extends Task {
         @EventHandler
         public void onClick(InventoryClickEvent e) {
             TaskSettings settings = Game.getInstance().getTaskSettings(ID);
-            if (e.getView().getTitle().equals(settings.name)) {
+            if (e.getView().getTitle().equals(settings.name) && e.getAction().equals(InventoryAction.PICKUP_ALL)) {
                 e.setCancelled(true);
                 AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(e.getWhoClicked().getUniqueId());
                 ItemStack currentItem = e.getCurrentItem();

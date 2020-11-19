@@ -7,9 +7,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * Hat inventory class.
@@ -27,7 +27,7 @@ public class HatInventory extends BaseInventory {
 
     @Override
     public Inventory create() {
-        Inventory inventory = Bukkit.createInventory(null, InventoryType.CHEST, "Hats");
+        Inventory inventory = Bukkit.createInventory(null, 36, "Hats");
         inventory.setContents(new ItemStack[]{
                 new ItemStack(Material.GRASS_BLOCK),
                 new ItemStack(Material.BEACON),
@@ -56,6 +56,19 @@ public class HatInventory extends BaseInventory {
                 new ItemStack(Material.SPONGE),
                 new ItemStack(Material.TARGET)
         });
+
+        ItemStack removeItem = new ItemStack(Material.BARRIER);
+        ItemMeta removeItemMeta = removeItem.getItemMeta();
+        removeItemMeta.setDisplayName("§cRemove hat");
+        removeItem.setItemMeta(removeItemMeta);
+        inventory.setItem(34, removeItem);
+
+        ItemStack backItem = new ItemStack(Material.STICK);
+        ItemMeta backItemMeta = backItem.getItemMeta();
+        backItemMeta.setDisplayName("§cBack");
+        backItem.setItemMeta(backItemMeta);
+        inventory.setItem(35, backItem);
+
         return inventory;
     }
 
@@ -79,9 +92,18 @@ public class HatInventory extends BaseInventory {
                     AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
                     ItemStack currentItem = e.getCurrentItem();
                     if (currentItem != null) {
-                        auPlayer.setHat(currentItem);
-                        auPlayer.refreshEquipment();
-                        player.closeInventory();
+                        Material currentMaterial = currentItem.getType();
+                        if (currentMaterial.equals(Material.BARRIER)) {
+                            auPlayer.setHat(null);
+                            auPlayer.refresh();
+                            player.closeInventory();
+                        } else if (currentMaterial.equals(Material.STICK)) {
+                            player.openInventory(new ComputerInventory(auPlayer).create());
+                        } else {
+                            auPlayer.setHat(currentItem);
+                            auPlayer.refresh();
+                            player.closeInventory();
+                        }
                     }
                 }
             }

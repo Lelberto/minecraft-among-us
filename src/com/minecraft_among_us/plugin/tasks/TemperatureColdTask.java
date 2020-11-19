@@ -4,7 +4,6 @@ import com.minecraft_among_us.plugin.game.AmongUsPlayer;
 import com.minecraft_among_us.plugin.config.TaskSettings;
 import com.minecraft_among_us.plugin.game.Game;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -52,20 +51,17 @@ public class TemperatureColdTask extends TemperatureTask {
         @EventHandler
         public void onClick(InventoryClickEvent e) {
             TaskSettings settings = Game.getInstance().getTaskSettings(ID);
-            if (e.getView().getTitle().equals(settings.name)) {
+            if (e.getView().getTitle().equals(settings.name) && e.getAction().equals(InventoryAction.PICKUP_ALL)) {
                 e.setCancelled(true);
-                if (e.getAction().equals(InventoryAction.PICKUP_ALL)) {
-                    Player player = (Player) e.getWhoClicked();
-                    AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
-                    ItemStack currentItem = e.getCurrentItem();
-                    if (currentItem != null) {
-                        TemperatureColdTask task = (TemperatureColdTask) auPlayer.getTask(settings.name);
-                        Material currentMaterial = currentItem.getType();
-                        if (currentMaterial.equals(Material.GREEN_CONCRETE)) {
-                            task.change(true);
-                        } else if (currentMaterial.equals(Material.RED_CONCRETE)) {
-                            task.change(false);
-                        }
+                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(e.getWhoClicked().getUniqueId());
+                ItemStack currentItem = e.getCurrentItem();
+                if (currentItem != null) {
+                    TemperatureColdTask task = (TemperatureColdTask) auPlayer.getTask(settings.name);
+                    Material currentMaterial = currentItem.getType();
+                    if (currentMaterial.equals(Material.GREEN_CONCRETE)) {
+                        task.change(true);
+                    } else if (currentMaterial.equals(Material.RED_CONCRETE)) {
+                        task.change(false);
                     }
                 }
             }

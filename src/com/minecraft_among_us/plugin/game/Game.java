@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -78,6 +79,7 @@ public class Game {
      */
     private Team registerTechnicalTeam() {
         Team team = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(Game.TECHNICAL_TTEAM_NAME);
+        team.setCanSeeFriendlyInvisibles(false);
         team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
         team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
         return team;
@@ -106,6 +108,7 @@ public class Game {
                                 auPlayer.isCrewmate() ? "§bCrewmate" : "§4Impostor",
                                 auPlayer.isCrewmate() ? "§7Finish your tasks or find impostor(s)" : "§7Kill crewmates without showing you",
                                 20, 60, 20);
+                        auPlayer.refresh();
                         this.taskBar.addPlayer(player);
                     });
 
@@ -190,11 +193,15 @@ public class Game {
         List<Task> allTasks = this.getAllTasks().stream().filter(currentTask -> !currentTask.isFake()).collect(Collectors.toList());
         List<Task> finishedTasks = allTasks.stream().filter(Task::isFinished).collect(Collectors.toList());
         this.getTaskBar().setProgress((double) finishedTasks.size() / (double) allTasks.size());
-        if (this.getCrewmates().size() == this.getImpostors().size()) {
+        if (this.getImpostors().size() == 0) {
+            // TODO Crewmates wins
+            this.stop();
+        } else if (this.getCrewmates().size() == this.getImpostors().size()) {
             // TODO Impostors wins
             this.stop();
         } else if (allTasks.stream().filter(currentTask -> !currentTask.isFake()).count() == finishedTasks.size()) {
             // TODO Crewmates wins
+            this.stop();
         }
     }
 
@@ -431,6 +438,18 @@ public class Game {
          * @param e Event
          */
         @EventHandler
+        public void onItemFrameChange(PlayerInteractEntityEvent e) {
+            if (!Game.getInstance().isDevMode()) {
+                e.setCancelled(true);
+            }
+        }
+
+        /**
+         * Event triggered when a player interacts at an entity.
+         *
+         * @param e Event
+         */
+        @EventHandler
         public void onDamage(PlayerInteractAtEntityEvent e) {
             if (!Game.getInstance().isDevMode()) {
                 e.setCancelled(true);
@@ -445,6 +464,42 @@ public class Game {
         @EventHandler
         public void onDamage(PlayerInteractEvent e) {
             if (!Game.getInstance().isDevMode()) {
+                e.setCancelled(true);
+            }
+        }
+
+        /**
+         * Event triggered when a player swaps items in hand.
+         *
+         * @param e Event
+         */
+        @EventHandler
+        public void onSwapHand(PlayerSwapHandItemsEvent e) {
+            if (!Game.getInstance().isDevMode()) {
+                e.setCancelled(true);
+            }
+        }
+
+        /**
+         * Event triggered when a player drops an item.
+         *
+         * @param e Event
+         */
+        @EventHandler
+        public void onDrop(PlayerDropItemEvent e) {
+            if (!Game.getInstance().isDevMode()) {
+                e.setCancelled(true);
+            }
+        }
+
+        /**
+         * Event triggered when a player interacts on his inventory.
+         *
+         * @param e Event
+         */
+        @EventHandler
+        public void onPlayerInventoryClick(InventoryClickEvent e) {
+            if (!Game.getInstance().isDevMode() && e.getView().getTitle().equals("Crafting")) {
                 e.setCancelled(true);
             }
         }

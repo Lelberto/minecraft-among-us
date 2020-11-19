@@ -5,6 +5,7 @@ import com.minecraft_among_us.plugin.Plugin;
 import com.minecraft_among_us.plugin.config.TaskSettings;
 import com.minecraft_among_us.plugin.event.TaskFinishEvent;
 import com.minecraft_among_us.plugin.game.Game;
+import com.minecraft_among_us.plugin.game.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -149,14 +150,19 @@ public abstract class Task {
         @EventHandler
         public void onLaunchTask(PlayerInteractEvent e) {
             if (e.getHand().equals(EquipmentSlot.HAND) && e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-                Player player = e.getPlayer();
-                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
+                Game game = Game.getInstance();
                 Location blockLocation = e.getClickedBlock().getLocation();
-                TaskSettings taskSettings = Game.getInstance().getTaskSettings(blockLocation);
+                TaskSettings taskSettings = game.getTaskSettings(blockLocation);
                 if (taskSettings != null) {
-                    Task task = auPlayer.getTask(taskSettings.id);
-                    if (task != null && !task.isFinished() && !task.isFake()) {
-                        task.execute();
+                    Player player = e.getPlayer();
+                    AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
+                    if (game.getState().equals(GameState.IN_PROGRESS)) {
+                        Task task = auPlayer.getTask(taskSettings.id);
+                        if (task != null && !task.isFinished() && !task.isFake()) {
+                            task.execute();
+                        }
+                    } else {
+                        ((Player) auPlayer.toBukkitPlayer()).sendMessage(Plugin.getPluginNameChat() + "§cCan't doing tasks when a vote is in progress");
                     }
                 }
             }
