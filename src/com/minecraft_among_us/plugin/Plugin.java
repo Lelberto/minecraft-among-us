@@ -95,6 +95,7 @@ public class Plugin extends JavaPlugin {
         Bukkit.getOnlinePlayers().forEach(player -> {
             player.setCollidable(false);
             game.getPlayers().add(new AmongUsPlayer(player.getUniqueId(), game.randomColor()));
+            game.getTechnicalTeam().addEntry(player.getName());
         });
     }
 
