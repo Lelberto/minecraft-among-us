@@ -151,19 +151,19 @@ public abstract class Task {
         public void onLaunchTask(PlayerInteractEvent e) {
             if (e.getHand().equals(EquipmentSlot.HAND) && e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
                 Game game = Game.getInstance();
-                Player player = e.getPlayer();
-                AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
-                if (game.getState().equals(GameState.IN_PROGRESS)) {
-                    Location blockLocation = e.getClickedBlock().getLocation();
-                    TaskSettings taskSettings = game.getTaskSettings(blockLocation);
-                    if (taskSettings != null) {
+                Location blockLocation = e.getClickedBlock().getLocation();
+                TaskSettings taskSettings = game.getTaskSettings(blockLocation);
+                if (taskSettings != null) {
+                    Player player = e.getPlayer();
+                    AmongUsPlayer auPlayer = AmongUsPlayer.getPlayer(player.getUniqueId());
+                    if (game.getState().equals(GameState.IN_PROGRESS)) {
                         Task task = auPlayer.getTask(taskSettings.id);
                         if (task != null && !task.isFinished() && !task.isFake()) {
                             task.execute();
                         }
+                    } else {
+                        ((Player) auPlayer.toBukkitPlayer()).sendMessage(Plugin.getPluginNameChat() + "§cCan't doing tasks when a vote is in progress");
                     }
-                } else {
-                    ((Player) auPlayer.toBukkitPlayer()).sendMessage(Plugin.getPluginNameChat() + "§cCan't doing tasks when a vote is in progress");
                 }
             }
         }
