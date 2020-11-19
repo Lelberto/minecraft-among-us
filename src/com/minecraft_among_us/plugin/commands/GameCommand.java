@@ -23,13 +23,14 @@ public class GameCommand implements CommandExecutor {
                 if (args[0].equalsIgnoreCase("start")) {
                     if (game.getState().equals(GameState.HUB)) {
                         game.start();
-                    } else {
-                        sender.sendMessage(Plugin.getPluginNameChat() + "§cGame is already started");
+                        return true;
                     }
+                    sender.sendMessage(Plugin.getPluginNameChat() + "§cGame is already started");
+                    return false;
                 }
                 if (args[0].equalsIgnoreCase("devmode")) {
                     if (args.length == 1) {
-                        sender.sendMessage(Plugin.getPluginNameChat() + "Dev mode is " + Game.getInstance().isDevMode());
+                        sender.sendMessage(Plugin.getPluginNameChat() + "Dev mode is " + game.isDevMode());
                         return true;
                     }
                     if (args[1].equalsIgnoreCase("on")) {
@@ -41,9 +42,14 @@ public class GameCommand implements CommandExecutor {
                         sender.sendMessage(Plugin.getPluginNameChat() + "Dev mode is now off");
                         return true;
                     }
+                    sender.sendMessage(Plugin.getPluginNameChat() + "Dev mode is " + game.isDevMode());
+                    return false;
                 }
             }
+            sender.sendMessage("§cIncorrect usage");
+            return false;
         }
+        sender.sendMessage("§cPermission denied");
         return false;
     }
 }
