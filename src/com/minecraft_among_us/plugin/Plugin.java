@@ -103,5 +103,6 @@ public class Plugin extends JavaPlugin {
         super.onDisable();
         // TODO Used for debug only, remove it in production
         Game.getInstance().getTechnicalTeam().unregister();
+        Game.getInstance().getTaskBar().removeAll();
     }
 }
